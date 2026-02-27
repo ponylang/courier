@@ -1,0 +1,23 @@
+{
+  "packages": [
+    "courier"
+  ],
+  "info": {
+    "description": "HTTP client for Pony",
+    "homepage": "https://github.com/ponylang/courier",
+    "license": "BSD-2-Clause",
+    "documentation_url": "https://ponylang.github.io/courier/",
+    "version": "0.0.0",
+    "name": "courier"
+  },
+  "deps": [
+    {
+      "locator": "github.com/ponylang/lori.git",
+      "version": "0.8.5"
+    },
+    {
+      "locator": "github.com/ponylang/ssl.git",
+      "version": "2.0.0"
+    }
+  ]
+}
