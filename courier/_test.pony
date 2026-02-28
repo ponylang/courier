@@ -167,6 +167,16 @@ actor \nodoc\ Main is TestList
     test(_TestMultipartBuilderIntegration)
     test(_TestMultipartNonAsciiFilename)
 
+    // Multipart escaping property-based tests
+    test(Property1UnitTest[String val](
+      _PropertyMultipartEscapedNamesWellFormed))
+
+    // Multipart escaping example-based tests
+    test(_TestMultipartFieldNameWithQuote)
+    test(_TestMultipartFilenameWithQuote)
+    test(_TestMultipartFieldNameWithBackslash)
+    test(_TestMultipartFilenameWithBothSpecials)
+
     // URL parsing property-based tests
     test(Property1UnitTest[_ValidURLParts](_PropertyURLRoundtrip))
     test(Property1UnitTest[_ValidURLParts](_PropertyURLDefaultPort))
