@@ -22,6 +22,10 @@ Connects to `httpbin.org` over HTTPS and POSTs form-encoded data. Demonstrates `
 
 Connects to `httpbin.org` over HTTPS and POSTs a multipart form with a text field and a file attachment. Demonstrates `MultipartFormData` with `Request.post().multipart_body()` for `multipart/form-data` uploads. httpbin.org echoes the submitted form data and files back in a JSON response.
 
+## [url-parsing](url-parsing/)
+
+Parses `https://httpbin.org/get?source=courier` with `URL.parse()`, prints the parsed components (scheme, host, port, path, query), uses `is_ssl()` to choose a TLS connection, and sends a GET request using `request_path()` as the request target. httpbin.org echoes the request details back in a JSON response. Demonstrates `URL.parse()` for URL decomposition, `ParsedURL.is_ssl()` for choosing plain vs TLS connections, and `ParsedURL.request_path()` for the HTTP request target.
+
 ## [json-api](json-api/)
 
 Connects to `jsonplaceholder.typicode.com` over HTTPS, fetches a JSON todo item, decodes the response into a typed `Todo` object, and prints selected fields. Demonstrates `Request` builder for request construction, `ResponseCollector` for body accumulation, `JsonDecoder` and `DecodeJson` for typed JSON decoding, and `HTTPClientConnection.ssl()` for TLS connections.

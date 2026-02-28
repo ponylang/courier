@@ -166,3 +166,33 @@ actor \nodoc\ Main is TestList
     test(_TestMultipartEmpty)
     test(_TestMultipartBuilderIntegration)
     test(_TestMultipartNonAsciiFilename)
+
+    // URL parsing property-based tests
+    test(Property1UnitTest[_ValidURLParts](_PropertyURLRoundtrip))
+    test(Property1UnitTest[_ValidURLParts](_PropertyURLDefaultPort))
+    test(Property1UnitTest[_ValidURLParts](
+      _PropertyURLRequestPathStartsWithSlash))
+
+    // URL parsing example-based tests
+    test(_TestURLFullComponents)
+    test(_TestURLMinimal)
+    test(_TestURLDefaultPortHTTP)
+    test(_TestURLDefaultPortHTTPS)
+    test(_TestURLMissingPathDefault)
+    test(_TestURLFragmentDiscarded)
+    test(_TestURLIPv6Host)
+    test(_TestURLIPv6DefaultPort)
+    test(_TestURLCaseInsensitiveScheme)
+    test(_TestURLEmptyPortDefault)
+    test(_TestURLErrorMissingScheme)
+    test(_TestURLErrorUnsupportedScheme)
+    test(_TestURLErrorMissingHost)
+    test(_TestURLErrorInvalidPort)
+    test(_TestURLErrorPortZero)
+    test(_TestURLErrorPortTooLarge)
+    test(_TestURLErrorUserInfo)
+    test(_TestURLValidPort65535)
+    test(_TestURLQueryWithoutPath)
+    test(_TestURLStringOmitsDefaultPort)
+    test(_TestURLStringIncludesNonDefaultPort)
+    test(_TestURLStringReBracketsIPv6)

@@ -69,6 +69,10 @@ For HTTPS, use `HTTPClientConnection.ssl()` instead of
   mixed form submissions; use with `multipart_body()` on the request builder.
   For simple key-value form data without files, use `FormEncoder`/`form_body()`
   instead.
+- `URL` — parse URL strings into `ParsedURL` components
+- `ParsedURL` — parsed URL with scheme, host, port, path, and optional query
+- `Scheme` — URL scheme (`SchemeHTTP` or `SchemeHTTPS`)
+- `URLParseError` — error encountered during URL parsing
 - `ResponseJson` — parse `HTTPResponse` body as JSON via json-ng
 - `JsonDecoder` — interface for typed JSON decoders
 - `JsonDecodeError` — decode failure with descriptive message
