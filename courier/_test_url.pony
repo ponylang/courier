@@ -7,8 +7,8 @@ use "pony_test"
 
 class \nodoc\ iso _PropertyURLRoundtrip is Property1[_ValidURLParts]
   """
-  A valid URL parsed with URL.parse() then reconstructed with string() and
-  re-parsed produces the same field values.
+  A generated valid URL string parsed with URL.parse() produces field values
+  matching the generated parts.
   """
   fun name(): String => "url/roundtrip"
 
@@ -18,26 +18,30 @@ class \nodoc\ iso _PropertyURLRoundtrip is Property1[_ValidURLParts]
   fun ref property(arg1: _ValidURLParts, ph: PropertyHelper) =>
     let url_str = arg1.to_url_string()
     match URL.parse(url_str)
-    | let first: ParsedURL =>
-      let reconstructed = first.string()
-      match URL.parse(consume reconstructed)
-      | let second: ParsedURL =>
-        ph.assert_eq[String val](first.host, second.host)
-        ph.assert_eq[String val](first.port, second.port)
-        ph.assert_eq[String val](first.path, second.path)
-        ph.assert_eq[Bool](first.is_ssl(), second.is_ssl())
-        match (first.query, second.query)
-        | (let fq: String, let sq: String) =>
-          ph.assert_eq[String val](fq, sq)
-        | (None, None) => None
+    | let parsed: ParsedURL =>
+      ph.assert_eq[String val](
+        arg1.scheme, parsed.scheme.string())
+      ph.assert_eq[String val](arg1.host, parsed.host)
+      if arg1.port != "" then
+        ph.assert_eq[String val](arg1.port, parsed.port)
+      end
+      if arg1.path != "" then
+        ph.assert_eq[String val](arg1.path, parsed.path)
+      else
+        ph.assert_eq[String val]("/", parsed.path)
+      end
+      if arg1.query != "" then
+        match parsed.query
+        | let q: String =>
+          ph.assert_eq[String val](arg1.query, q)
         else
-          ph.fail("query mismatch after roundtrip")
+          ph.fail("expected query string")
         end
-      | let err: URLParseError =>
-        ph.fail("re-parse failed: " + err.string())
+      else
+        ph.assert_true(parsed.query is None)
       end
     | let err: URLParseError =>
-      ph.fail("initial parse failed: " + err.string())
+      ph.fail("parse failed: " + err.string())
     end
 
 class \nodoc\ iso _PropertyURLDefaultPort is Property1[_ValidURLParts]
@@ -440,48 +444,3 @@ class \nodoc\ iso _TestURLQueryWithoutPath is UnitTest
       h.fail("parse failed: " + err.string())
     end
 
-class \nodoc\ iso _TestURLStringOmitsDefaultPort is UnitTest
-  """string() omits default ports."""
-  fun name(): String => "url/string_omits_default_port"
-
-  fun apply(h: TestHelper) =>
-    match URL.parse("http://example.com:80/path")
-    | let u: ParsedURL =>
-      let s = u.string()
-      h.assert_eq[String val]("http://example.com/path", consume s)
-    | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
-    end
-    match URL.parse("https://example.com:443/path")
-    | let u: ParsedURL =>
-      let s = u.string()
-      h.assert_eq[String val]("https://example.com/path", consume s)
-    | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
-    end
-
-class \nodoc\ iso _TestURLStringIncludesNonDefaultPort is UnitTest
-  """string() includes non-default ports."""
-  fun name(): String => "url/string_includes_non_default_port"
-
-  fun apply(h: TestHelper) =>
-    match URL.parse("http://example.com:8080/path")
-    | let u: ParsedURL =>
-      let s = u.string()
-      h.assert_eq[String val]("http://example.com:8080/path", consume s)
-    | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
-    end
-
-class \nodoc\ iso _TestURLStringReBracketsIPv6 is UnitTest
-  """string() re-brackets IPv6 hosts."""
-  fun name(): String => "url/string_re_brackets_ipv6"
-
-  fun apply(h: TestHelper) =>
-    match URL.parse("http://[::1]:8080/path")
-    | let u: ParsedURL =>
-      let s = u.string()
-      h.assert_eq[String val]("http://[::1]:8080/path", consume s)
-    | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
-    end

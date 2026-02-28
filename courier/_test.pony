@@ -193,6 +193,3 @@ actor \nodoc\ Main is TestList
     test(_TestURLErrorUserInfo)
     test(_TestURLValidPort65535)
     test(_TestURLQueryWithoutPath)
-    test(_TestURLStringOmitsDefaultPort)
-    test(_TestURLStringIncludesNonDefaultPort)
-    test(_TestURLStringReBracketsIPv6)

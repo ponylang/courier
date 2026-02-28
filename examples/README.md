@@ -2,6 +2,10 @@
 
 Each subdirectory is a self-contained Pony program demonstrating a different part of the courier library. Ordered from simplest to most involved.
 
+## [url-parsing](url-parsing/)
+
+Parses `https://httpbin.org/get?source=courier` with `URL.parse()` and prints the decomposed components: scheme, host, port, path, query, `request_path()`, and `is_ssl()`. Demonstrates `URL.parse()` for URL decomposition and error handling via the `URLParseError` union.
+
 ## [basic](basic/)
 
 Connects to `example.com:80`, sends an HTTP GET request for `/`, and prints the response status, headers, and body to stdout. Demonstrates the full lifecycle: `HTTPClientConnectionActor` implementation, `on_connected` to send the request, response callbacks for status/headers/body, and connection close after completion. Uses `ResponseCollector` to accumulate streaming body chunks into a single `HTTPResponse`. Start here if you're new to the library.
@@ -21,10 +25,6 @@ Connects to `httpbin.org` over HTTPS and POSTs form-encoded data. Demonstrates `
 ## [multipart-upload](multipart-upload/)
 
 Connects to `httpbin.org` over HTTPS and POSTs a multipart form with a text field and a file attachment. Demonstrates `MultipartFormData` with `Request.post().multipart_body()` for `multipart/form-data` uploads. httpbin.org echoes the submitted form data and files back in a JSON response.
-
-## [url-parsing](url-parsing/)
-
-Parses `https://httpbin.org/get?source=courier` with `URL.parse()`, prints the parsed components (scheme, host, port, path, query), uses `is_ssl()` to choose a TLS connection, and sends a GET request using `request_path()` as the request target. httpbin.org echoes the request details back in a JSON response. Demonstrates `URL.parse()` for URL decomposition, `ParsedURL.is_ssl()` for choosing plain vs TLS connections, and `ParsedURL.request_path()` for the HTTP request target.
 
 ## [json-api](json-api/)
 

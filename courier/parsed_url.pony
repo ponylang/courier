@@ -1,4 +1,4 @@
-class val ParsedURL is Stringable
+class val ParsedURL
   """
   A parsed URL with scheme, host, port, path, and optional query string.
 
@@ -43,42 +43,3 @@ class val ParsedURL is Stringable
   fun is_ssl(): Bool =>
     """True if the scheme is HTTPS."""
     scheme is SchemeHTTPS
-
-  fun string(): String iso^ =>
-    """
-    Reconstruct the URL as a string.
-
-    Default ports (80 for HTTP, 443 for HTTPS) are omitted. IPv6 hosts are
-    re-bracketed. The path is always included (at minimum `"/"`), so
-    `http://example.com` round-trips as `http://example.com/`.
-    """
-    let s = recover iso String end
-    s.append(scheme.string())
-    s.append("://")
-
-    // Re-bracket IPv6 addresses
-    if host.contains(":") then
-      s.push('[')
-      s.append(host)
-      s.push(']')
-    else
-      s.append(host)
-    end
-
-    // Include port only if non-default
-    let default_port =
-      if scheme is SchemeHTTP then "80" else "443" end
-    if port != default_port then
-      s.push(':')
-      s.append(port)
-    end
-
-    s.append(path)
-
-    match query
-    | let q: String =>
-      s.push('?')
-      s.append(q)
-    end
-
-    consume s
