@@ -1,6 +1,6 @@
 # courier
 
-An HTTP/1.1 client for Pony, built on [lori](https://github.com/ponylang/lori). Courier follows lori's protocol-handler-owned-by-actor pattern.
+An HTTP/1.1 client for Pony.
 
 ## Status
 
