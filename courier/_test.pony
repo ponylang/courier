@@ -153,3 +153,16 @@ actor \nodoc\ Main is TestList
     test(_TestDecodeJsonInvalidJson)
     test(_TestDecodeJsonWrongStructure)
     test(_TestJsonDecodeErrorString)
+
+    // Multipart property-based tests
+    test(Property1UnitTest[USize](_PropertyMultipartBodyStructure))
+
+    // Multipart example-based tests
+    test(_TestMultipartBoundaryFormat)
+    test(_TestMultipartContentTypeBoundaryConsistency)
+    test(_TestMultipartTextField)
+    test(_TestMultipartFilePart)
+    test(_TestMultipartMixed)
+    test(_TestMultipartEmpty)
+    test(_TestMultipartBuilderIntegration)
+    test(_TestMultipartNonAsciiFilename)

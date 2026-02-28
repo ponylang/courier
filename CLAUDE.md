@@ -62,7 +62,7 @@ Courier follows the same pattern as lori and stallion: protocol handler class ow
 **Request builder:**
 - `Request` — primitive factory with `get()`, `head()`, `post()`, `put()`, `patch()`, `delete()`, `options()`
 - `RequestOptions` — interface for all methods: `header()`, `query()`, `basic_auth()`, `bearer_auth()`, `build()`
-- `RequestOptionsWithBody` — extends with `body()`, `json_body()`, `form_body()`; narrows to `RequestOptions` after body is set
+- `RequestOptionsWithBody` — extends with `body()`, `json_body()`, `form_body()`, `multipart_body()`; narrows to `RequestOptions` after body is set
 - `_RequestBuilder` — internal class implementing both interfaces
 - GET/HEAD return `RequestOptions` (no body). DELETE/OPTIONS/POST/PUT/PATCH return `RequestOptionsWithBody`.
 - CONNECT and TRACE omitted from builder (use `HTTPRequest(CONNECT, ...)` directly)
@@ -71,6 +71,12 @@ Courier follows the same pattern as lori and stallion: protocol handler class ow
 - `QueryParams` — primitive, encodes `Array[(String, String)] val` as RFC 3986 query string (returns `String`)
 - `FormEncoder` — primitive, encodes as `application/x-www-form-urlencoded` per WHATWG (returns `Array[U8] val`)
 - `_PercentEncoder` — internal primitive with `query()` (RFC 3986) and `form()` (WHATWG) encoding modes
+
+**Multipart form data:**
+- `MultipartFormData` — `class ref` builder for `multipart/form-data` bodies. `field()` adds text fields, `file()` adds file attachments. `content_type()` returns the header value with boundary, `body()` serializes to wire format. Use with `multipart_body()` on the request builder.
+- `_MultipartField` — `class val`, internal text field part
+- `_MultipartFile` — `class val`, internal file attachment part
+- `_MultipartPart` — type alias `(_MultipartField | _MultipartFile)`
 
 **Auth helpers:**
 - `BasicAuth` — primitive, returns `("authorization", "Basic <base64>")` tuple

@@ -55,6 +55,11 @@ class ref _RequestBuilder
     _headers.set("Content-Type", "application/x-www-form-urlencoded")
     this
 
+  fun ref multipart_body(form: MultipartFormData): _RequestBuilder ref =>
+    _body = form.body()
+    _headers.set("Content-Type", form.content_type())
+    this
+
   fun ref build(): HTTPRequest val =>
     let full_path = _build_path()
     var hdrs: Headers iso = recover iso Headers end

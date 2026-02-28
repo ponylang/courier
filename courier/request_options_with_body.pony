@@ -40,5 +40,12 @@ interface ref RequestOptionsWithBody
     `Content-Type: application/x-www-form-urlencoded`.
     """
 
+  fun ref multipart_body(form: MultipartFormData): RequestOptions ref
+    """
+    Set the request body from a `MultipartFormData` builder.
+
+    Sets `Content-Type` to `multipart/form-data` with the boundary.
+    """
+
   fun ref build(): HTTPRequest val
     """Build the final `HTTPRequest val`."""
