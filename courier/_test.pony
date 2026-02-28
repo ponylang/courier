@@ -139,3 +139,17 @@ actor \nodoc\ Main is TestList
     test(_TestResponseJsonValidArray)
     test(_TestResponseJsonInvalid)
     test(_TestResponseJsonEmptyBody)
+
+    // JSON decoder property-based tests
+    test(Property1UnitTest[String val](_PropertyDecodeJsonParseErrorPropagation))
+    test(Property1UnitTest[String val](_PropertyDecodeJsonDecodeErrorPropagation))
+    test(Property1UnitTest[String val](_PropertyDecodeJsonIdentityDecoder))
+
+    // JSON decoder example-based tests
+    test(_TestJsonDecoderSuccessfulDecode)
+    test(_TestJsonDecoderMissingField)
+    test(_TestJsonDecoderWrongType)
+    test(_TestDecodeJsonValidJson)
+    test(_TestDecodeJsonInvalidJson)
+    test(_TestDecodeJsonWrongStructure)
+    test(_TestJsonDecodeErrorString)

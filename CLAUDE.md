@@ -78,6 +78,9 @@ Courier follows the same pattern as lori and stallion: protocol handler class ow
 
 **JSON utilities:**
 - `ResponseJson` — primitive, parses `HTTPResponse.body` as JSON via json-ng, returns `(JsonValue | JsonParseError)`
+- `JsonDecodeError` — `class val ... is Stringable`, structural mismatch when decoding parsed JSON (wrong field types, missing fields)
+- `JsonDecoder[A]` — `interface val`, converts `JsonValue` into typed domain object `A` or `JsonDecodeError`
+- `DecodeJson[A]` — primitive, combines `ResponseJson` + `JsonDecoder` into single call, returns `(A | JsonParseError | JsonDecodeError)`
 
 ### Key Design Decisions
 

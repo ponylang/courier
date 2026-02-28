@@ -66,6 +66,9 @@ For HTTPS, use `HTTPClientConnection.ssl()` instead of
 - `RequestOptions` — builder interface for all methods (headers, query, auth)
 - `RequestOptionsWithBody` — builder interface with body methods (POST, etc.)
 - `ResponseJson` — parse `HTTPResponse` body as JSON via json-ng
+- `JsonDecoder` — interface for typed JSON decoders
+- `JsonDecodeError` — decode failure with descriptive message
+- `DecodeJson` — parse and decode an HTTP response body in one step
 
 ## Design
 

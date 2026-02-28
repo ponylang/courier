@@ -4,6 +4,26 @@ use json = "json"
 use lori = "lori"
 use ssl = "ssl/net"
 
+class val Todo
+  """A todo item from jsonplaceholder.typicode.com."""
+  let title: String
+  let completed: Bool
+
+  new val create(title': String, completed': Bool) =>
+    title = title'
+    completed = completed'
+
+primitive TodoDecoder is JsonDecoder[Todo]
+  """Decode a JSON object into a `Todo`."""
+  fun apply(value: json.JsonValue): (Todo | JsonDecodeError) =>
+    let nav = json.JsonNav(value)
+    try
+      Todo(nav("title").as_string()?, nav("completed").as_bool()?)
+    else
+      JsonDecodeError(
+        "expected object with string 'title' and boolean 'completed'")
+    end
+
 actor Main
   new create(env: Env) =>
     let auth = lori.TCPConnectAuth(env.root)
@@ -26,11 +46,12 @@ actor JsonApiClient is HTTPClientConnectionActor
 
   Usage: ./json-api
   Connects to jsonplaceholder.typicode.com over HTTPS, fetches a todo item,
-  parses the JSON response, and prints selected fields.
+  decodes the JSON response into a typed `Todo` object, and prints selected
+  fields.
 
   Demonstrates `Request` builder for request construction, `ResponseCollector`
-  for body accumulation, `ResponseJson` for JSON parsing, and
-  `HTTPClientConnection.ssl()` for TLS connections.
+  for body accumulation, `JsonDecoder` and `DecodeJson` for typed JSON
+  decoding, and `HTTPClientConnection.ssl()` for TLS connections.
   """
   var _http: HTTPClientConnection = HTTPClientConnection.none()
   var _collector: ResponseCollector = ResponseCollector
@@ -67,28 +88,15 @@ actor JsonApiClient is HTTPClientConnectionActor
   fun ref on_response_complete() =>
     try
       let response = _collector.build()?
-      match ResponseJson(response)
-      | let value: json.JsonValue =>
-        match value
-        | let obj: json.JsonObject =>
-          _out.print("Todo item:")
-          try
-            match obj("title")?
-            | let title: String =>
-              _out.print("  title: " + title)
-            end
-          end
-          try
-            match obj("completed")?
-            | let completed: Bool =>
-              _out.print("  completed: " + completed.string())
-            end
-          end
-        else
-          _out.print("Unexpected JSON type")
-        end
+      match DecodeJson[Todo](response, TodoDecoder)
+      | let todo: Todo =>
+        _out.print("Todo item:")
+        _out.print("  title: " + todo.title)
+        _out.print("  completed: " + todo.completed.string())
       | let err: json.JsonParseError =>
         _out.print("JSON parse error: " + err.string())
+      | let err: JsonDecodeError =>
+        _out.print("JSON decode error: " + err.string())
       end
     end
     _http.close()
