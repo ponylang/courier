@@ -287,3 +287,121 @@ class \nodoc\ iso _TestMultipartNonAsciiFilename is UnitTest
     h.assert_true(
       body_str.contains("filename=\"\xC3\xA9l\xC3\xA8ve.pdf\""),
       "UTF-8 filename should be preserved as-is")
+
+// ---------------------------------------------------------------------------
+// Escaped quoting tests
+// ---------------------------------------------------------------------------
+
+class \nodoc\ iso _PropertyMultipartEscapedNamesWellFormed
+  is Property1[String val]
+  """
+  For any generated string used as a field name, the serialized body's
+  Content-Disposition quoted-strings are well-formed: each opening `"`
+  after `name=` is terminated by a closing `"` with only escaped quotes
+  inside.
+  """
+  fun name(): String => "multipart/escaped_names_well_formed"
+
+  fun gen(): Generator[String val] =>
+    // Biased byte generator: extra copies of " and \ mixed with normal chars
+    let byte_gen = Generators.one_of[U8]([
+      '"'; '"'; '"'
+      '\\'; '\\'; '\\'
+      'a'; 'b'; 'c'; 'd'; '.'; ' '; '='
+    ])
+    Generators.byte_string(byte_gen, 1, 20)
+
+  fun ref property(arg1: String val, ph: PropertyHelper) =>
+    let form = MultipartFormData
+    form.field(arg1, "val")
+    let data: Array[U8] val = recover val [as U8: 0x00] end
+    form.file(arg1, arg1, "application/octet-stream", data)
+
+    let body_str = String.from_array(form.body())
+    // Find each name=" and filename=" occurrence and verify well-formed
+    // quoted-string
+    let markers: Array[String val] val = ["name=\""; "filename=\""]
+    for marker in markers.values() do
+      var search_from: ISize = 0
+      while true do
+        let pos = try
+          body_str.find(marker where offset = search_from)?
+        else
+          break
+        end
+        // Walk from after the opening " to find the closing "
+        let start = pos + marker.size().isize()
+        var i = start.usize()
+        var escaped = false
+        var found_close = false
+        while i < body_str.size() do
+          try
+            let byte = body_str(i)?
+            if escaped then
+              escaped = false
+            elseif byte == '\\' then
+              escaped = true
+            elseif byte == '"' then
+              found_close = true
+              break
+            end
+          end
+          i = i + 1
+        end
+        ph.assert_true(found_close,
+          "quoted-string after " + marker + " should have closing quote")
+        ph.assert_false(escaped,
+          "quoted-string should not end in a dangling backslash")
+        search_from = i.isize() + 1
+      end
+    end
+
+class \nodoc\ iso _TestMultipartFieldNameWithQuote is UnitTest
+  """Field name containing `"` is escaped as `\"`."""
+  fun name(): String => "multipart/field_name_with_quote"
+
+  fun apply(h: TestHelper) =>
+    let form = MultipartFormData
+    form.field("field\"name", "value")
+    let body_str = String.from_array(form.body())
+    h.assert_true(
+      body_str.contains("name=\"field\\\"name\""),
+      "quote in field name should be escaped")
+
+class \nodoc\ iso _TestMultipartFilenameWithQuote is UnitTest
+  """Filename containing `"` is escaped as `\"`."""
+  fun name(): String => "multipart/filename_with_quote"
+
+  fun apply(h: TestHelper) =>
+    let data: Array[U8] val = recover val [as U8: 0xFF] end
+    let form = MultipartFormData
+    form.file("doc", "file\"name.txt", "text/plain", data)
+    let body_str = String.from_array(form.body())
+    h.assert_true(
+      body_str.contains("filename=\"file\\\"name.txt\""),
+      "quote in filename should be escaped")
+
+class \nodoc\ iso _TestMultipartFieldNameWithBackslash is UnitTest
+  """Field name containing `\` is escaped as `\\`."""
+  fun name(): String => "multipart/field_name_with_backslash"
+
+  fun apply(h: TestHelper) =>
+    let form = MultipartFormData
+    form.field("field\\name", "value")
+    let body_str = String.from_array(form.body())
+    h.assert_true(
+      body_str.contains("name=\"field\\\\name\""),
+      "backslash in field name should be escaped")
+
+class \nodoc\ iso _TestMultipartFilenameWithBothSpecials is UnitTest
+  """Filename with both `"` and `\` has both escaped."""
+  fun name(): String => "multipart/filename_with_both_specials"
+
+  fun apply(h: TestHelper) =>
+    let data: Array[U8] val = recover val [as U8: 0xFF] end
+    let form = MultipartFormData
+    form.file("doc", "a\\b\"c.txt", "text/plain", data)
+    let body_str = String.from_array(form.body())
+    h.assert_true(
+      body_str.contains("filename=\"a\\\\b\\\"c.txt\""),
+      "both backslash and quote in filename should be escaped")

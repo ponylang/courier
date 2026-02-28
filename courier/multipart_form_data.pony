@@ -39,7 +39,12 @@ class ref MultipartFormData
       + Format.int[U64](b, FormatHexSmallBare where width = 16, fill = '0')
 
   fun ref field(name: String, value: String): MultipartFormData ref =>
-    """Add a text field to the form."""
+    """
+    Add a text field to the form.
+
+    `"` and `\` in the name are automatically backslash-escaped in the
+    serialized `Content-Disposition` quoted-string.
+    """
     _parts.push(_MultipartField(name, value))
     this
 
@@ -50,7 +55,12 @@ class ref MultipartFormData
     data: Array[U8] val)
     : MultipartFormData ref
   =>
-    """Add a file attachment to the form."""
+    """
+    Add a file attachment to the form.
+
+    `"` and `\` in the name and filename are automatically backslash-escaped
+    in the serialized `Content-Disposition` quoted-string.
+    """
     _parts.push(_MultipartFile(name, filename, file_content_type, data))
     this
 
@@ -72,6 +82,9 @@ class ref MultipartFormData
     `Content-Disposition` header; file parts additionally include a `filename`
     parameter and a `Content-Type` header. The body ends with a closing
     boundary.
+
+    Field names and filenames are backslash-escaped (`"` becomes `\"`, `\`
+    becomes `\\`) within `Content-Disposition` quoted-strings.
     """
     let buf = recover iso Array[U8] end
     for part in _parts.values() do
@@ -81,14 +94,14 @@ class ref MultipartFormData
       match part
       | let f: _MultipartField val =>
         buf.append("Content-Disposition: form-data; name=\"")
-        buf.append(f.name)
+        buf.append(_escape_quoted(f.name))
         buf.append("\"\r\n\r\n")
         buf.append(f.value)
       | let f: _MultipartFile val =>
         buf.append("Content-Disposition: form-data; name=\"")
-        buf.append(f.name)
+        buf.append(_escape_quoted(f.name))
         buf.append("\"; filename=\"")
-        buf.append(f.filename)
+        buf.append(_escape_quoted(f.filename))
         buf.append("\"\r\nContent-Type: ")
         buf.append(f.content_type)
         buf.append("\r\n\r\n")
@@ -99,4 +112,14 @@ class ref MultipartFormData
     buf.append("--")
     buf.append(_boundary)
     buf.append("--\r\n")
+    consume buf
+
+  fun _escape_quoted(input: String): String iso^ =>
+    let buf = recover iso String(input.size()) end
+    for byte in input.values() do
+      if (byte == '"') or (byte == '\\') then
+        buf.push('\\')
+      end
+      buf.push(byte)
+    end
     consume buf
