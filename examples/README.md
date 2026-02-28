@@ -18,6 +18,10 @@ Connects to `httpbin.org` over HTTPS and sends a GET request with a Bearer token
 
 Connects to `httpbin.org` over HTTPS and POSTs form-encoded data. Demonstrates `Request.post()` with `.form_body()` for `application/x-www-form-urlencoded` POST requests. httpbin.org echoes the submitted form fields back in a JSON response.
 
+## [multipart-upload](multipart-upload/)
+
+Connects to `httpbin.org` over HTTPS and POSTs a multipart form with a text field and a file attachment. Demonstrates `MultipartFormData` with `Request.post().multipart_body()` for `multipart/form-data` uploads. httpbin.org echoes the submitted form data and files back in a JSON response.
+
 ## [json-api](json-api/)
 
 Connects to `jsonplaceholder.typicode.com` over HTTPS, fetches a JSON todo item, decodes the response into a typed `Todo` object, and prints selected fields. Demonstrates `Request` builder for request construction, `ResponseCollector` for body accumulation, `JsonDecoder` and `DecodeJson` for typed JSON decoding, and `HTTPClientConnection.ssl()` for TLS connections.

@@ -65,6 +65,10 @@ For HTTPS, use `HTTPClientConnection.ssl()` instead of
 - `Request` — factory for typed step-builder request construction
 - `RequestOptions` — builder interface for all methods (headers, query, auth)
 - `RequestOptionsWithBody` — builder interface with body methods (POST, etc.)
+- `MultipartFormData` — `multipart/form-data` builder for file uploads and
+  mixed form submissions; use with `multipart_body()` on the request builder.
+  For simple key-value form data without files, use `FormEncoder`/`form_body()`
+  instead.
 - `ResponseJson` — parse `HTTPResponse` body as JSON via json-ng
 - `JsonDecoder` — interface for typed JSON decoders
 - `JsonDecodeError` — decode failure with descriptive message
