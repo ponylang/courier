@@ -56,6 +56,16 @@ For HTTPS, use `HTTPClientConnection.ssl()` instead of
 - `Response` — parsed response metadata (version, status, reason, headers)
 - `ClientConnectionConfig` — parser limits, idle timeout, bind address
 - `SendRequestResult` — result of `send_request()` (success or error)
+- `HTTPResponse` — buffered response with complete body (from `ResponseCollector`)
+- `ResponseCollector` — accumulates streaming callbacks into `HTTPResponse`
+- `QueryParams` — RFC 3986 query string encoding
+- `FormEncoder` — `application/x-www-form-urlencoded` body encoding
+- `BasicAuth` — HTTP Basic authentication header
+- `BearerAuth` — HTTP Bearer token authentication header
+- `Request` — factory for typed step-builder request construction
+- `RequestOptions` — builder interface for all methods (headers, query, auth)
+- `RequestOptionsWithBody` — builder interface with body methods (POST, etc.)
+- `ResponseJson` — parse `HTTPResponse` body as JSON via json-ng
 
 ## Design
 

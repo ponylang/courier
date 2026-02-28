@@ -15,6 +15,7 @@ The `ssl` option is required because this library depends on the `ssl` package v
 
 - [lori](https://github.com/ponylang/lori) 0.8.5 — TCP I/O with connection-actor model
 - [ssl](https://github.com/ponylang/ssl) 2.0.0 — SSL/TLS support
+- [json-ng](https://github.com/ponylang/json-ng) 0.3.0 — JSON parsing (for `ResponseJson`)
 
 ## Package
 
@@ -52,6 +53,32 @@ Courier follows the same pattern as lori and stallion: protocol handler class ow
 **Request serializer (internal):**
 - `_RequestSerializer` — auto-sets Host and Content-Length if not present
 
+### Layer: Convenience Utilities (PR 2)
+
+**Response collector:**
+- `HTTPResponse` — `class val` with version, status, reason, headers, and complete body as `Array[U8] val`
+- `ResponseCollector` — `class ref` that accumulates `on_response()` + `on_body_chunk()` callbacks, then `build()` produces `HTTPResponse val`. Partial: errors if `set_response()` was never called. Create a fresh collector per request/response cycle.
+
+**Request builder:**
+- `Request` — primitive factory with `get()`, `head()`, `post()`, `put()`, `patch()`, `delete()`, `options()`
+- `RequestOptions` — interface for all methods: `header()`, `query()`, `basic_auth()`, `bearer_auth()`, `build()`
+- `RequestOptionsWithBody` — extends with `body()`, `json_body()`, `form_body()`; narrows to `RequestOptions` after body is set
+- `_RequestBuilder` — internal class implementing both interfaces
+- GET/HEAD return `RequestOptions` (no body). DELETE/OPTIONS/POST/PUT/PATCH return `RequestOptionsWithBody`.
+- CONNECT and TRACE omitted from builder (use `HTTPRequest(CONNECT, ...)` directly)
+
+**Encoding utilities:**
+- `QueryParams` — primitive, encodes `Array[(String, String)] val` as RFC 3986 query string (returns `String`)
+- `FormEncoder` — primitive, encodes as `application/x-www-form-urlencoded` per WHATWG (returns `Array[U8] val`)
+- `_PercentEncoder` — internal primitive with `query()` (RFC 3986) and `form()` (WHATWG) encoding modes
+
+**Auth helpers:**
+- `BasicAuth` — primitive, returns `("authorization", "Basic <base64>")` tuple
+- `BearerAuth` — primitive, returns `("authorization", "Bearer <token>")` tuple
+
+**JSON utilities:**
+- `ResponseJson` — primitive, parses `HTTPResponse.body` as JSON via json-ng, returns `(JsonValue | JsonParseError)`
+
 ### Key Design Decisions
 
 - `send_request()` returns explicit `SendRequestResult`, not fire-and-forget
@@ -59,6 +86,8 @@ Courier follows the same pattern as lori and stallion: protocol handler class ow
 - User-initiated close does NOT complete in-progress close-delimited responses
 - Remote close DOES complete close-delimited responses (natural end signal)
 - `_on_tls_ready`/`_on_tls_failure` inherited as no-ops — lori routes initial SSL through `_on_connected`/`_on_connection_failure`
+- `QueryParams` returns `String` (for URL paths), `FormEncoder` returns `Array[U8] val` (for request body) — deliberate asymmetry matching their usage context
+- Request builder uses structural subtyping: `_RequestBuilder` satisfies both `RequestOptions` and `RequestOptionsWithBody` interfaces. Factory methods return the appropriate interface type to enforce compile-time body restriction.
 
 ## Release Notes
 

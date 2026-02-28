@@ -77,3 +77,65 @@ actor \nodoc\ Main is TestList
     test(_TestSerializerUserHostTakesPrecedence)
     test(_TestSerializerUserContentLengthTakesPrecedence)
     test(_TestSerializerNoBody)
+
+    // Response collector property-based tests
+    test(Property1UnitTest[Array[USize] ref](
+      _PropertyCollectorChunkAccumulation))
+    test(Property1UnitTest[U16](
+      _PropertyCollectorPreservesResponseMetadata))
+
+    // Response collector example-based tests
+    test(_TestCollectorBuildCorrectness)
+    test(_TestCollectorEmptyBody)
+    test(_TestCollectorSingleChunk)
+    test(_TestCollectorBuildWithoutResponse)
+
+    // Percent encoder property-based tests
+    test(Property1UnitTest[String val](
+      _PropertyQueryUnreservedPassthrough))
+    test(Property1UnitTest[U8](
+      _PropertyQueryReservedEncoded))
+    test(Property1UnitTest[USize](
+      _PropertyFormSpacesToPlus))
+    test(Property1UnitTest[(String val, String val)](
+      _PropertyQueryParamsRoundtrip))
+
+    // Percent encoder / query params example-based tests
+    test(_TestQueryParamsKnownGood)
+    test(_TestQueryParamsEmpty)
+    test(_TestQueryParamsSpecialChars)
+    test(_TestFormEncoderKnownGood)
+    test(_TestFormEncoderEmpty)
+    test(_TestFormEncoderSpecialChars)
+
+    // Auth property-based tests
+    test(Property1UnitTest[(String val, String val)](
+      _PropertyBasicAuthFormat))
+    test(Property1UnitTest[String val](
+      _PropertyBearerAuthFormat))
+
+    // Auth example-based tests
+    test(_TestBasicAuthKnownGood)
+    test(_TestBearerAuthKnownGood)
+
+    // Request builder property-based tests
+    test(Property1UnitTest[String val](
+      _PropertyBuilderMethodCorrect))
+
+    // Request builder example-based tests
+    test(_TestBuilderGetBasic)
+    test(_TestBuilderPostWithJsonBody)
+    test(_TestBuilderPostWithFormBody)
+    test(_TestBuilderQueryParams)
+    test(_TestBuilderHeaders)
+    test(_TestBuilderBasicAuth)
+    test(_TestBuilderBearerAuth)
+    test(_TestBuilderBodyNarrows)
+    test(_TestBuilderDeleteWithBody)
+    test(_TestBuilderNoQueryParams)
+
+    // Response JSON example-based tests
+    test(_TestResponseJsonValidObject)
+    test(_TestResponseJsonValidArray)
+    test(_TestResponseJsonInvalid)
+    test(_TestResponseJsonEmptyBody)
