@@ -20,4 +20,4 @@ Connects to `httpbin.org` over HTTPS and POSTs form-encoded data. Demonstrates `
 
 ## [json-api](json-api/)
 
-Connects to `jsonplaceholder.typicode.com` over HTTPS, fetches a JSON todo item, parses the response, and prints selected fields. Demonstrates `Request` builder for request construction, `ResponseCollector` for body accumulation, `ResponseJson` for JSON parsing, and `HTTPClientConnection.ssl()` for TLS connections.
+Connects to `jsonplaceholder.typicode.com` over HTTPS, fetches a JSON todo item, decodes the response into a typed `Todo` object, and prints selected fields. Demonstrates `Request` builder for request construction, `ResponseCollector` for body accumulation, `JsonDecoder` and `DecodeJson` for typed JSON decoding, and `HTTPClientConnection.ssl()` for TLS connections.
