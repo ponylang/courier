@@ -82,6 +82,12 @@ Courier follows the same pattern as lori and stallion: protocol handler class ow
 - `BasicAuth` — primitive, returns `("authorization", "Basic <base64>")` tuple
 - `BearerAuth` — primitive, returns `("authorization", "Bearer <token>")` tuple
 
+**URL parsing:**
+- `URL` — primitive, parses URL strings via `parse()`, returns `(ParsedURL | URLParseError)`
+- `ParsedURL` — `class val`, parsed URL with `scheme`, `host`, `port`, `path`, `query`. Package-private constructor (`_create`). `request_path()` returns combined path + query for request target. `is_ssl()` returns true for HTTPS. `string()` reconstructs URL (omits default port, re-brackets IPv6).
+- `Scheme` — `(SchemeHTTP | SchemeHTTPS)`, follows `Version` pattern (interface + primitives + union alias)
+- `URLParseError` — union of error primitives (`MissingScheme`, `UnsupportedScheme`, `MissingHost`, `InvalidPort`, `UserInfoNotSupported`), follows `ParseError` pattern
+
 **JSON utilities:**
 - `ResponseJson` — primitive, parses `HTTPResponse.body` as JSON via json-ng, returns `(JsonValue | JsonParseError)`
 - `JsonDecodeError` — `class val ... is Stringable`, structural mismatch when decoding parsed JSON (wrong field types, missing fields)

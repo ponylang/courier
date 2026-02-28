@@ -2,6 +2,10 @@
 
 Each subdirectory is a self-contained Pony program demonstrating a different part of the courier library. Ordered from simplest to most involved.
 
+## [url-parsing](url-parsing/)
+
+Parses `https://httpbin.org/get?source=courier` with `URL.parse()` and prints the decomposed components: scheme, host, port, path, query, `request_path()`, and `is_ssl()`. Demonstrates `URL.parse()` for URL decomposition and error handling via the `URLParseError` union.
+
 ## [basic](basic/)
 
 Connects to `example.com:80`, sends an HTTP GET request for `/`, and prints the response status, headers, and body to stdout. Demonstrates the full lifecycle: `HTTPClientConnectionActor` implementation, `on_connected` to send the request, response callbacks for status/headers/body, and connection close after completion. Uses `ResponseCollector` to accumulate streaming body chunks into a single `HTTPResponse`. Start here if you're new to the library.
