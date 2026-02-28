@@ -11,4 +11,3 @@ primitive SchemeHTTPS is _Scheme
   fun eq(that: Scheme): Bool => that is this
 
 type Scheme is ((SchemeHTTP | SchemeHTTPS) & _Scheme)
-  """URL scheme, either HTTP or HTTPS."""

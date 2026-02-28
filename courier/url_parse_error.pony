@@ -23,4 +23,3 @@ primitive UserInfoNotSupported is _URLParseError
 type URLParseError is
   ((MissingScheme | UnsupportedScheme | MissingHost | InvalidPort
   | UserInfoNotSupported) & _URLParseError)
-  """Error encountered during URL parsing."""
