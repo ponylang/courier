@@ -5,7 +5,7 @@ interface val JSONDecoder[A: Any val]
   Interface for converting a parsed `JsonValue` into a typed domain object.
 
   Implement this interface to define how a specific JSON structure maps to your
-  application type. Return `JSONDecodeError` when the JSON doesn't match \exhaustive\ the
+  application type. Return `JSONDecodeError` when the JSON doesn't match the
   expected structure.
 
   ```pony
@@ -34,5 +34,5 @@ interface val JSONDecoder[A: Any val]
   fun apply(value: json.JsonValue): (A | JSONDecodeError)
     """
     Decode a parsed JSON value into a domain object, or return an error if
-    the JSON structure doesn't match \exhaustive\.
+    the JSON structure doesn't match.
     """

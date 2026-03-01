@@ -186,7 +186,8 @@ class \nodoc\ iso _TestURLFullComponents is UnitTest
   fun name(): String => "url/full_components"
 
   fun apply(h: TestHelper) =>
-    match \exhaustive\ URL.parse("https://example.com:8443/api/v1?key=value#section")
+    match \exhaustive\
+      URL.parse("https://example.com:8443/api/v1?key=value#section")
     | let u: ParsedURL =>
       h.assert_true(u.scheme is SchemeHTTPS)
       h.assert_eq[String val]("example.com", u.host)
