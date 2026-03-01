@@ -7,13 +7,15 @@ actor Main
   new create(env: Env) =>
     let auth = lori.TCPConnectAuth(env.root)
     try
-      let ssl_ctx = recover val
-        let ctx = ssl.SSLContext
-        ctx.set_client_verify(true)
-        ctx.set_authority(
-          FilePath(FileAuth(env.root), "/etc/ssl/certs/ca-certificates.crt"))?
-        ctx
-      end
+      let ssl_ctx =
+        recover val
+          ssl.SSLContext
+            .> set_client_verify(true)
+            .> set_authority(
+              FilePath(
+                FileAuth(env.root),
+                "/etc/ssl/certs/ca-certificates.crt"))?
+        end
       QueryParamsClient(auth, ssl_ctx, env.out)
     else
       env.out.print("Failed to initialize SSL context")
@@ -41,8 +43,14 @@ actor QueryParamsClient is HTTPClientConnectionActor
     out: OutStream)
   =>
     _out = out
-    _http = HTTPClientConnection.ssl(auth, ssl_ctx,
-      "httpbin.org", "443", this, ClientConnectionConfig)
+    _http =
+      HTTPClientConnection.ssl(
+        auth,
+        ssl_ctx,
+        "httpbin.org",
+        "443",
+        this,
+        ClientConnectionConfig)
 
   fun ref _http_client_connection(): HTTPClientConnection => _http
 

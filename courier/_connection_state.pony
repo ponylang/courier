@@ -9,19 +9,29 @@ trait ref _ConnectionState
   """
 
   fun ref on_received(client: HTTPClientConnection ref, data: Array[U8] iso)
-    """Handle incoming data from the TCP connection."""
+    """
+    Handle incoming data from the TCP connection.
+    """
 
   fun ref on_closed(client: HTTPClientConnection ref)
-    """Handle connection close notification."""
+    """
+    Handle connection close notification.
+    """
 
   fun ref on_throttled(client: HTTPClientConnection ref)
-    """Handle backpressure applied notification."""
+    """
+    Handle backpressure applied notification.
+    """
 
   fun ref on_unthrottled(client: HTTPClientConnection ref)
-    """Handle backpressure released notification."""
+    """
+    Handle backpressure released notification.
+    """
 
   fun ref on_idle_timeout(client: HTTPClientConnection ref)
-    """Handle connection going idle."""
+    """
+    Handle connection going idle.
+    """
 
 class ref _Active is _ConnectionState
   """

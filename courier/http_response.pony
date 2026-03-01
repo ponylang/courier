@@ -23,7 +23,9 @@ class val HTTPResponse
     headers': Headers val,
     body': Array[U8] val)
   =>
-    """Create a buffered HTTP response with all fields."""
+    """
+    Create a buffered HTTP response with all fields.
+    """
     version = version'
     status = status'
     reason = reason'

@@ -51,7 +51,8 @@ trait tag HTTPClientConnectionActor is
     Called by the default implementation of `_connection()`. Must return
     the same instance every time.
     """
-
   fun ref _connection(): lori.TCPConnection =>
-    """Delegates to the protocol's TCP connection."""
+    """
+    Delegates to the protocol's TCP connection.
+    """
     _http_client_connection()._connection()

@@ -1,17 +1,17 @@
 use json = "json"
 
-primitive DecodeJson[A: Any val]
+primitive DecodeJSON[A: Any val]
   """
   Parse and decode an HTTP response body as a typed domain object in one step.
 
-  Combines `ResponseJson` (JSON parsing) with a `JsonDecoder` (structural
+  Combines `ResponseJSON` (JSON parsing) with a `JSONDecoder` (structural
   decoding) into a single call. The three-way return type distinguishes
   between success, parse failure, and decode failure:
 
   - `A` — the response body was valid JSON and matched the decoder's expected
     structure
   - `JsonParseError` — the response body was not valid JSON syntax
-  - `JsonDecodeError` — the JSON was valid but didn't match the decoder's
+  - `JSONDecodeError` — the JSON was valid but didn't match the decoder's
     expected structure (missing fields, wrong types, etc.)
 
   ```pony
@@ -19,12 +19,12 @@ primitive DecodeJson[A: Any val]
   use json = "json"
 
   // In on_response_complete():
-  match DecodeJson[User](response, UserDecoder)
+  match DecodeJSON[User](response, UserDecoder)
   | let user: User =>
     env.out.print("Hello, " + user.name)
   | let err: json.JsonParseError =>
     env.out.print("Invalid JSON: " + err.string())
-  | let err: JsonDecodeError =>
+  | let err: JSONDecodeError =>
     env.out.print("Unexpected structure: " + err.string())
   end
   ```
@@ -32,17 +32,17 @@ primitive DecodeJson[A: Any val]
 
   fun apply(
     response: HTTPResponse,
-    decoder: JsonDecoder[A])
-    : (A | json.JsonParseError | JsonDecodeError)
+    decoder: JSONDecoder[A])
+    : (A | json.JsonParseError | JSONDecodeError)
   =>
     """
     Parse `response.body` as JSON, then decode with `decoder`.
 
-    Returns `JsonParseError` if the body isn't valid JSON, `JsonDecodeError` if
+    Returns `JsonParseError` if the body isn't valid JSON, `JSONDecodeError` if
     the JSON doesn't match the decoder's expected structure, or the decoded
     value on success.
     """
-    match ResponseJson(response)
+    match ResponseJSON(response)
     | let value: json.JsonValue => decoder(value)
     | let err: json.JsonParseError => err
     end

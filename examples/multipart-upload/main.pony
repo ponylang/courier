@@ -7,13 +7,15 @@ actor Main
   new create(env: Env) =>
     let auth = lori.TCPConnectAuth(env.root)
     try
-      let ssl_ctx = recover val
-        let ctx = ssl.SSLContext
-        ctx.set_client_verify(true)
-        ctx.set_authority(
-          FilePath(FileAuth(env.root), "/etc/ssl/certs/ca-certificates.crt"))?
-        ctx
-      end
+      let ssl_ctx =
+        recover val
+          ssl.SSLContext
+            .> set_client_verify(true)
+            .> set_authority(
+              FilePath(
+                FileAuth(env.root),
+                "/etc/ssl/certs/ca-certificates.crt"))?
+        end
       MultipartUploadClient(auth, ssl_ctx, env.out)
     else
       env.out.print("Failed to initialize SSL context")
@@ -40,15 +42,25 @@ actor MultipartUploadClient is HTTPClientConnectionActor
     out: OutStream)
   =>
     _out = out
-    _http = HTTPClientConnection.ssl(auth, ssl_ctx,
-      "httpbin.org", "443", this, ClientConnectionConfig)
+    _http =
+      HTTPClientConnection.ssl(
+        auth,
+        ssl_ctx,
+        "httpbin.org",
+        "443",
+        this,
+        ClientConnectionConfig)
 
   fun ref _http_client_connection(): HTTPClientConnection => _http
 
   fun ref on_connected() =>
-    let file_data: Array[U8] val = recover val
-      "Hello from Pony!\n".array()
-    end
+    """
+    Build a multipart form and send it as a POST request.
+    """
+    let file_data: Array[U8] val =
+      recover val
+        "Hello from Pony!\n".array()
+      end
     let form = MultipartFormData
       .> field("username", "alice")
       .> file("document", "hello.txt", "text/plain", file_data)

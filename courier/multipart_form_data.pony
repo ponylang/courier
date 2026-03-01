@@ -28,7 +28,9 @@ class ref MultipartFormData
   embed _parts: Array[_MultipartPart]
 
   new ref create() =>
-    """Create a new builder with a randomly generated boundary string."""
+    """
+    Create a new builder with a randomly generated boundary string.
+    """
     _parts = Array[_MultipartPart]
     (let secs, let nanos) = Time.now()
     let rand = Rand(secs.u64(), nanos.u64())

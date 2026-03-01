@@ -88,7 +88,6 @@ class \nodoc\ iso _PropertyURLRequestPathStartsWithSlash
 // ---------------------------------------------------------------------------
 // Test data generator
 // ---------------------------------------------------------------------------
-
 class val _ValidURLParts
   let scheme: String
   let host: String
@@ -182,7 +181,6 @@ primitive \nodoc\ _ValidURLPartsGen
 // ---------------------------------------------------------------------------
 // Example-based tests
 // ---------------------------------------------------------------------------
-
 class \nodoc\ iso _TestURLFullComponents is UnitTest
   """Full URL with all components — verify fields, fragment discarded."""
   fun name(): String => "url/full_components"

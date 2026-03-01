@@ -41,5 +41,7 @@ class val ParsedURL
     end
 
   fun is_ssl(): Bool =>
-    """True if the scheme is HTTPS."""
+    """
+    True if the scheme is HTTPS.
+    """
     scheme is SchemeHTTPS

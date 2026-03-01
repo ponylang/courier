@@ -1,11 +1,17 @@
 primitive _ParseContinue
-  """More data may be parseable in the current buffer."""
+  """
+  More data may be parseable in the current buffer.
+  """
 
 primitive _ParseNeedMore
-  """Need more data from the network before parsing can continue."""
+  """
+  Need more data from the network before parsing can continue.
+  """
 
 type _ParseResult is (_ParseContinue | _ParseNeedMore | ParseError)
-  """Result of a single parse step."""
+  """
+  Result of a single parse step.
+  """
 
 interface ref _ParserState
   """
@@ -21,9 +27,10 @@ interface ref _ParserState
 // ---------------------------------------------------------------------------
 // Buffer scanning utilities
 // ---------------------------------------------------------------------------
-
 primitive _BufferScan
-  """Byte-level scanning utilities for the parser buffer."""
+  """
+  Byte-level scanning utilities for the parser buffer.
+  """
 
   fun find_crlf(buf: Array[U8] box, from: USize = 0): (USize | None) =>
     """
@@ -52,7 +59,9 @@ primitive _BufferScan
     to: USize = USize.max_value())
     : (USize | None)
   =>
-    """Find the first occurrence of `byte` in buf[from, to)."""
+    """
+    Find the first occurrence of `byte` in buf[from, to).
+    """
     var i = from
     let limit = to.min(buf.size())
     try
@@ -68,7 +77,6 @@ primitive _BufferScan
 // ---------------------------------------------------------------------------
 // Parser states
 // ---------------------------------------------------------------------------
-
 class _ExpectStatusLine is _ParserState
   """
   Waiting for a complete HTTP status line.
@@ -96,30 +104,31 @@ class _ExpectStatusLine is _ParserState
         return InvalidStatusLine
       end
 
-      let version = try
-        if (p.buf(p.pos)? == 'H')
-          and (p.buf(p.pos + 1)? == 'T')
-          and (p.buf(p.pos + 2)? == 'T')
-          and (p.buf(p.pos + 3)? == 'P')
-          and (p.buf(p.pos + 4)? == '/')
-          and (p.buf(p.pos + 5)? == '1')
-          and (p.buf(p.pos + 6)? == '.')
-        then
-          let minor = p.buf(p.pos + 7)?
-          if minor == '1' then
-            HTTP11
-          elseif minor == '0' then
-            HTTP10
+      let version =
+        try
+          if (p.buf(p.pos)? == 'H')
+            and (p.buf(p.pos + 1)? == 'T')
+            and (p.buf(p.pos + 2)? == 'T')
+            and (p.buf(p.pos + 3)? == 'P')
+            and (p.buf(p.pos + 4)? == '/')
+            and (p.buf(p.pos + 5)? == '1')
+            and (p.buf(p.pos + 6)? == '.')
+          then
+            let minor = p.buf(p.pos + 7)?
+            if minor == '1' then
+              HTTP11
+            elseif minor == '0' then
+              HTTP10
+            else
+              return InvalidVersion
+            end
           else
             return InvalidVersion
           end
         else
+          _Unreachable()
           return InvalidVersion
         end
-      else
-        _Unreachable()
-        return InvalidVersion
-      end
 
       // Expect space after version
       try
@@ -137,43 +146,48 @@ class _ExpectStatusLine is _ParserState
         return InvalidStatusLine
       end
 
-      let status: U16 = try
-        let d1 = p.buf(status_start)?
-        let d2 = p.buf(status_start + 1)?
-        let d3 = p.buf(status_start + 2)?
-        if (d1 < '0') or (d1 > '9')
-          or (d2 < '0') or (d2 > '9')
-          or (d3 < '0') or (d3 > '9')
-        then
+      let status: U16 =
+        try
+          let d1 = p.buf(status_start)?
+          let d2 = p.buf(status_start + 1)?
+          let d3 = p.buf(status_start + 2)?
+          if (d1 < '0') or (d1 > '9')
+            or (d2 < '0') or (d2 > '9')
+            or (d3 < '0') or (d3 > '9')
+          then
+            return InvalidStatusLine
+          end
+          (((d1 - '0').u16() * 100) +
+            ((d2 - '0').u16() * 10) +
+            (d3 - '0').u16())
+        else
+          _Unreachable()
           return InvalidStatusLine
         end
-        (((d1 - '0').u16() * 100) +
-         ((d2 - '0').u16() * 10) +
-          (d3 - '0').u16())
-      else
-        _Unreachable()
-        return InvalidStatusLine
-      end
 
       // Reason phrase: everything after status code to CRLF
       // May be empty. If present, a space separates status from reason.
       let after_status = status_start + 3
-      let reason: String val = if after_status < crlf then
-        // Skip the space between status and reason
-        let reason_start = if try
-          p.buf(after_status)? == ' '
+      let reason: String val =
+        if after_status < crlf then
+          // Skip the space between status and reason
+          let reason_start =
+            if
+              try
+                p.buf(after_status)? == ' '
+              else
+                _Unreachable()
+                false
+              end
+            then
+              after_status + 1
+            else
+              after_status
+            end
+          p.extract_string(reason_start, crlf)
         else
-          _Unreachable()
-          false
-        end then
-          after_status + 1
-        else
-          after_status
+          ""
         end
-        p.extract_string(reason_start, crlf)
-      else
-        ""
-      end
 
       // Advance past the status line
       p.pos = crlf + 2
@@ -290,7 +304,8 @@ class _ExpectHeaders is _ParserState
         end
 
         // Find colon separator
-        let colon_pos = match _BufferScan.find_byte(p.buf, ':', p.pos, crlf)
+        let colon_pos =
+          match _BufferScan.find_byte(p.buf, ':', p.pos, crlf)
           | let i: USize => i
           | None => return MalformedHeaders
           end
@@ -361,7 +376,7 @@ class _ExpectHeaders is _ParserState
           return TooLarge
         end
         return _ParseNeedMore
-      end
+        end
     end
     _Unreachable()
     _ParseNeedMore
@@ -369,7 +384,9 @@ class _ExpectHeaders is _ParserState
   fun _parse_content_length(value: String val)
     : (USize | InvalidContentLength)
   =>
-    """Parse a Content-Length value as a non-negative integer."""
+    """
+    Parse a Content-Length value as a non-negative integer.
+    """
     if value.size() == 0 then
       return InvalidContentLength
     end
@@ -441,22 +458,24 @@ class _ExpectChunkHeader is _ParserState
       end
 
       // Find optional chunk extension (semicolon)
-      let size_end = match _BufferScan.find_byte(p.buf, ';', p.pos, crlf)
+      let size_end =
+        match _BufferScan.find_byte(p.buf, ';', p.pos, crlf)
         | let i: USize => i
         | None => crlf
         end
 
       // Parse hex chunk size — must consume entire string
       let size_str: String val = p.extract_string(p.pos, size_end)
-      let chunk_size = try
-        (let cs, let consumed) = size_str.read_int[USize](0, 16)?
-        if consumed.usize() != size_str.size() then
+      let chunk_size =
+        try
+          (let cs, let consumed) = size_str.read_int[USize](0, 16)?
+          if consumed.usize() != size_str.size() then
+            return InvalidChunk
+          end
+          cs
+        else
           return InvalidChunk
         end
-        cs
-      else
-        return InvalidChunk
-      end
 
       p.pos = crlf + 2
 
@@ -469,8 +488,9 @@ class _ExpectChunkHeader is _ParserState
         if (_total_body_received + chunk_size) > _config.max_body_size then
           return BodyTooLarge
         end
-        p.state = _ExpectChunkData(
-          chunk_size, _total_body_received, _config)
+        p.state =
+          _ExpectChunkData(
+            chunk_size, _total_body_received, _config)
         _ParseContinue
       end
     | None =>

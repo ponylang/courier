@@ -28,8 +28,9 @@ actor BasicClient is HTTPClientConnectionActor
     out: OutStream)
   =>
     _out = out
-    _http = HTTPClientConnection(auth, host, port, this,
-      ClientConnectionConfig)
+    _http =
+      HTTPClientConnection(
+        auth, host, port, this, ClientConnectionConfig)
 
   fun ref _http_client_connection(): HTTPClientConnection => _http
 
@@ -40,6 +41,9 @@ actor BasicClient is HTTPClientConnectionActor
     _out.print("Connection failed")
 
   fun ref on_response(response: Response val) =>
+    """
+    Handle response metadata and begin collecting body chunks.
+    """
     _collector = ResponseCollector
     _collector.set_response(response)
     _out.print("< " + response.version.string() + " "

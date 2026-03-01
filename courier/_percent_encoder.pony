@@ -21,8 +21,8 @@ primitive _PercentEncoder
       if _is_rfc3986_unreserved(byte) then
         buf.push(byte)
       else
-        buf.>push('%')
-          .>push(_hex_digit(byte >> 4))
+        buf .> push('%')
+          .> push(_hex_digit(byte >> 4))
           .push(_hex_digit(byte and 0x0F))
       end
     end
@@ -42,8 +42,8 @@ primitive _PercentEncoder
       elseif _is_form_unreserved(byte) then
         buf.push(byte)
       else
-        buf.>push('%')
-          .>push(_hex_digit(byte >> 4))
+        buf .> push('%')
+          .> push(_hex_digit(byte >> 4))
           .push(_hex_digit(byte and 0x0F))
       end
     end

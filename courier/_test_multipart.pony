@@ -23,11 +23,15 @@ class \nodoc\ iso _PropertyMultipartBodyStructure
       if (i % 2) == 0 then
         form.field("field" + i.string(), "value" + i.string())
       else
-        let data: Array[U8] val = recover val
-          [as U8: 0xDE; 0xAD; 0xBE; 0xEF]
-        end
-        form.file("file" + i.string(), "f" + i.string() + ".bin",
-          "application/octet-stream", data)
+        let data: Array[U8] val =
+          recover val
+            [as U8: 0xDE; 0xAD; 0xBE; 0xEF]
+          end
+        form.file(
+          "file" + i.string(),
+          "f" + i.string() + ".bin",
+          "application/octet-stream",
+          data)
       end
       i = i + 1
     end
@@ -51,7 +55,9 @@ class \nodoc\ iso _PropertyMultipartBodyStructure
       end
     end
     // N parts means N opening boundaries + 1 closing boundary
-    ph.assert_eq[USize](arg1 + 1, count,
+    ph.assert_eq[USize](
+      arg1 + 1,
+      count,
       "should have N+1 boundary occurrences")
 
     // Verify each field name appears in the body
@@ -75,7 +81,6 @@ class \nodoc\ iso _PropertyMultipartBodyStructure
 // ---------------------------------------------------------------------------
 // Example-based tests
 // ---------------------------------------------------------------------------
-
 class \nodoc\ iso _TestMultipartBoundaryFormat is UnitTest
   """
   The boundary in content_type() starts with "----courier" and has total
@@ -88,13 +93,19 @@ class \nodoc\ iso _TestMultipartBoundaryFormat is UnitTest
     let ct = form.content_type()
     let prefix = "multipart/form-data; boundary="
     let ct_prefix: String val = ct.substring(0, prefix.size().isize())
-    h.assert_eq[String val](prefix, ct_prefix,
+    h.assert_eq[String val](
+      prefix,
+      ct_prefix,
       "content_type should start with media type and boundary param")
     let boundary: String val = ct.substring(prefix.size().isize())
     let boundary_prefix: String val = boundary.substring(0, 11)
-    h.assert_eq[String val]("----courier", boundary_prefix,
+    h.assert_eq[String val](
+      "----courier",
+      boundary_prefix,
       "boundary should start with ----courier")
-    h.assert_eq[USize](43, boundary.size(),
+    h.assert_eq[USize](
+      43,
+      boundary.size(),
       "boundary should be 11 prefix + 32 hex = 43 chars")
     // Verify all hex chars after prefix
     let hex_part: String val = boundary.substring(11)
@@ -224,8 +235,9 @@ class \nodoc\ iso _TestMultipartMixed is UnitTest
 
     // Closing boundary
     let ct = form.content_type()
-    let boundary: String val = ct.substring(
-      "multipart/form-data; boundary=".size().isize())
+    let boundary: String val =
+      ct.substring(
+        "multipart/form-data; boundary=".size().isize())
     let closing: String val = "--" + boundary + "--"
     h.assert_true(
       body_str.contains(closing),
@@ -239,8 +251,9 @@ class \nodoc\ iso _TestMultipartEmpty is UnitTest
     let form = MultipartFormData
     let body_str = String.from_array(form.body())
     let ct = form.content_type()
-    let boundary: String val = ct.substring(
-      "multipart/form-data; boundary=".size().isize())
+    let boundary: String val =
+      ct.substring(
+        "multipart/form-data; boundary=".size().isize())
 
     let expected: String val = "--" + boundary + "--\r\n"
     h.assert_eq[String val](expected, body_str)
@@ -291,7 +304,6 @@ class \nodoc\ iso _TestMultipartNonAsciiFilename is UnitTest
 // ---------------------------------------------------------------------------
 // Escaped quoting tests
 // ---------------------------------------------------------------------------
-
 class \nodoc\ iso _PropertyMultipartEscapedNamesWellFormed
   is Property1[String val]
   """
@@ -304,11 +316,11 @@ class \nodoc\ iso _PropertyMultipartEscapedNamesWellFormed
 
   fun gen(): Generator[String val] =>
     // Biased byte generator: extra copies of " and \ mixed with normal chars
-    let byte_gen = Generators.one_of[U8]([
-      '"'; '"'; '"'
-      '\\'; '\\'; '\\'
-      'a'; 'b'; 'c'; 'd'; '.'; ' '; '='
-    ])
+    let byte_gen =
+      Generators.one_of[U8](
+        [ '"'; '"'; '"'
+          '\\'; '\\'; '\\'
+          'a'; 'b'; 'c'; 'd'; '.'; ' '; '=' ])
     Generators.byte_string(byte_gen, 1, 20)
 
   fun ref property(arg1: String val, ph: PropertyHelper) =>
@@ -324,11 +336,12 @@ class \nodoc\ iso _PropertyMultipartEscapedNamesWellFormed
     for marker in markers.values() do
       var search_from: ISize = 0
       while true do
-        let pos = try
-          body_str.find(marker where offset = search_from)?
-        else
-          break
-        end
+        let pos =
+          try
+            body_str.find(marker where offset = search_from)?
+          else
+            break
+          end
         // Walk from after the opening " to find the closing "
         let start = pos + marker.size().isize()
         var i = start.usize()
@@ -348,9 +361,11 @@ class \nodoc\ iso _PropertyMultipartEscapedNamesWellFormed
           end
           i = i + 1
         end
-        ph.assert_true(found_close,
+        ph.assert_true(
+          found_close,
           "quoted-string after " + marker + " should have closing quote")
-        ph.assert_false(escaped,
+        ph.assert_false(
+          escaped,
           "quoted-string should not end in a dangling backslash")
         search_from = i.isize() + 1
       end

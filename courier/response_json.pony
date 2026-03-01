@@ -1,6 +1,6 @@
 use json = "json"
 
-primitive ResponseJson
+primitive ResponseJSON
   """
   Parse the body of an `HTTPResponse` as JSON using json-ng.
 
@@ -12,7 +12,7 @@ primitive ResponseJson
   ```pony
   use json = "json"
 
-  match ResponseJson(response)
+  match ResponseJSON(response)
   | let value: json.JsonValue =>
     // work with the parsed JSON
   | let err: json.JsonParseError =>

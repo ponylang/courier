@@ -9,7 +9,9 @@ class Headers
   embed _headers: Array[(String, String)]
 
   new create() =>
-    """Create an empty header collection."""
+    """
+    Create an empty header collection.
+    """
     _headers = Array[(String, String)]
 
   fun ref set(name: String, value: String) =>
@@ -56,9 +58,13 @@ class Headers
     None
 
   fun size(): USize =>
-    """Return the number of header entries."""
+    """
+    Return the number of header entries.
+    """
     _headers.size()
 
   fun values(): ArrayValues[(String, String), this->Array[(String, String)]] =>
-    """Iterate over all header entries as (name, value) pairs."""
+    """
+    Iterate over all header entries as (name, value) pairs.
+    """
     _headers.values()

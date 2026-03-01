@@ -15,7 +15,7 @@ The `ssl` option is required because this library depends on the `ssl` package v
 
 - [lori](https://github.com/ponylang/lori) 0.8.5 — TCP I/O with connection-actor model
 - [ssl](https://github.com/ponylang/ssl) 2.0.0 — SSL/TLS support
-- [json-ng](https://github.com/ponylang/json-ng) 0.3.0 — JSON parsing (for `ResponseJson`)
+- [json-ng](https://github.com/ponylang/json-ng) 0.3.0 — JSON parsing (for `ResponseJSON`)
 
 ## Package
 
@@ -89,10 +89,10 @@ Courier follows the same pattern as lori and stallion: protocol handler class ow
 - `URLParseError` — union of error primitives (`MissingScheme`, `UnsupportedScheme`, `MissingHost`, `InvalidPort`, `UserInfoNotSupported`), follows `ParseError` pattern
 
 **JSON utilities:**
-- `ResponseJson` — primitive, parses `HTTPResponse.body` as JSON via json-ng, returns `(JsonValue | JsonParseError)`
-- `JsonDecodeError` — `class val ... is Stringable`, structural mismatch when decoding parsed JSON (wrong field types, missing fields)
-- `JsonDecoder[A]` — `interface val`, converts `JsonValue` into typed domain object `A` or `JsonDecodeError`
-- `DecodeJson[A]` — primitive, combines `ResponseJson` + `JsonDecoder` into single call, returns `(A | JsonParseError | JsonDecodeError)`
+- `ResponseJSON` — primitive, parses `HTTPResponse.body` as JSON via json-ng, returns `(JsonValue | JsonParseError)`
+- `JSONDecodeError` — `class val ... is Stringable`, structural mismatch when decoding parsed JSON (wrong field types, missing fields)
+- `JSONDecoder[A]` — `interface val`, converts `JsonValue` into typed domain object `A` or `JSONDecodeError`
+- `DecodeJSON[A]` — primitive, combines `ResponseJSON` + `JSONDecoder` into single call, returns `(A | JsonParseError | JSONDecodeError)`
 
 ### Key Design Decisions
 

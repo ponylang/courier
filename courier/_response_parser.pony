@@ -99,7 +99,9 @@ class _ResponseParser
     _failed = true
 
   fun ref extract_bytes(from: USize, to: USize): Array[U8] iso^ =>
-    """Copy bytes from buf[from..to) into a new iso array."""
+    """
+    Copy bytes from buf[from..to) into a new iso array.
+    """
     let len = to - from
     let out = recover Array[U8].create(len) end
     var i = from
@@ -110,7 +112,9 @@ class _ResponseParser
     out
 
   fun ref extract_string(from: USize, to: USize): String iso^ =>
-    """Copy bytes from buf[from..to) into a new iso String."""
+    """
+    Copy bytes from buf[from..to) into a new iso String.
+    """
     let len = to - from
     let out = recover String.create(len) end
     var i = from
