@@ -93,7 +93,7 @@ class ref MultipartFormData
       buf.append("--")
       buf.append(_boundary)
       buf.append("\r\n")
-      match part
+      match \exhaustive\ part
       | let f: _MultipartField val =>
         buf.append("Content-Disposition: form-data; name=\"")
         buf.append(_escape_quoted(f.name))

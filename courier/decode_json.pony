@@ -11,7 +11,7 @@ primitive DecodeJSON[A: Any val]
   - `A` — the response body was valid JSON and matched the decoder's expected
     structure
   - `JsonParseError` — the response body was not valid JSON syntax
-  - `JSONDecodeError` — the JSON was valid but didn't match the decoder's
+  - `JSONDecodeError` — the JSON was valid but didn't match \exhaustive\ the decoder's
     expected structure (missing fields, wrong types, etc.)
 
   ```pony
@@ -19,7 +19,7 @@ primitive DecodeJSON[A: Any val]
   use json = "json"
 
   // In on_response_complete():
-  match DecodeJSON[User](response, UserDecoder)
+  match \exhaustive\ DecodeJSON[User](response, UserDecoder)
   | let user: User =>
     env.out.print("Hello, " + user.name)
   | let err: json.JsonParseError =>
@@ -39,10 +39,10 @@ primitive DecodeJSON[A: Any val]
     Parse `response.body` as JSON, then decode with `decoder`.
 
     Returns `JsonParseError` if the body isn't valid JSON, `JSONDecodeError` if
-    the JSON doesn't match the decoder's expected structure, or the decoded
+    the JSON doesn't match \exhaustive\ the decoder's expected structure, or the decoded
     value on success.
     """
-    match ResponseJSON(response)
+    match \exhaustive\ ResponseJSON(response)
     | let value: json.JsonValue => decoder(value)
     | let err: json.JsonParseError => err
     end

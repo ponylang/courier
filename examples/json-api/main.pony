@@ -100,7 +100,7 @@ actor JSONAPIClient is HTTPClientConnectionActor
   fun ref on_response_complete() =>
     try
       let response = _collector.build()?
-      match DecodeJSON[Todo](response, TodoDecoder)
+      match \exhaustive\ DecodeJSON[Todo](response, TodoDecoder)
       | let todo: Todo =>
         _out.print("Todo item:")
         _out.print("  title: " + todo.title)

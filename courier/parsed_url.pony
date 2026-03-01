@@ -35,7 +35,7 @@ class val ParsedURL
 
     Always starts with `/`. For example, `/api/v1?key=value`.
     """
-    match query
+    match \exhaustive\ query
     | let q: String => path + "?" + q
     | None => path
     end

@@ -3,7 +3,7 @@ use "../../courier"
 actor Main
   new create(env: Env) =>
     let url_str = "https://httpbin.org/get?source=courier"
-    match URL.parse(url_str)
+    match \exhaustive\ URL.parse(url_str)
     | let url: ParsedURL =>
       env.out.print("Parsed URL: " + url_str)
       env.out.print("  scheme: " + url.scheme.string())

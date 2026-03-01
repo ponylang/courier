@@ -5,7 +5,7 @@ class val JSONDecodeError is Stringable
   `JSONDecodeError` is distinct from json-ng's `JsonParseError`:
   `JsonParseError` means the response body was not valid JSON syntax, while
   `JSONDecodeError` means the JSON was syntactically valid but its structure
-  doesn't match what the decoder expected — a missing field, a field with the
+  doesn't match \exhaustive\ what the decoder expected — a missing field, a field with the
   wrong type, or any other shape mismatch. The message should describe what was
   expected versus what was found.
   """

@@ -26,7 +26,7 @@ class val ClientConnectionConfig
   ClientConnectionConfig
 
   // Custom timeout via MakeIdleTimeout (milliseconds)
-  let timeout = match lori.MakeIdleTimeout(30_000)
+  let timeout = match \exhaustive\ lori.MakeIdleTimeout(30_000)
   | let t: lori.IdleTimeout => t
   end
   ClientConnectionConfig(where

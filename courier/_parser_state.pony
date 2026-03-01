@@ -91,7 +91,7 @@ class _ExpectStatusLine is _ParserState
   fun ref parse(p: _ResponseParser ref): _ParseResult =>
     let available = p.buf.size() - p.pos
 
-    match _BufferScan.find_crlf(p.buf, p.pos)
+    match \exhaustive\ _BufferScan.find_crlf(p.buf, p.pos)
     | let crlf: USize =>
       let line_len = crlf - p.pos
       if line_len > _config.max_status_line_size then
@@ -235,7 +235,7 @@ class _ExpectHeaders is _ParserState
 
   fun ref parse(p: _ResponseParser ref): _ParseResult =>
     while true do
-      match _BufferScan.find_crlf(p.buf, p.pos)
+      match \exhaustive\ _BufferScan.find_crlf(p.buf, p.pos)
       | let crlf: USize =>
         if crlf == p.pos then
           // Empty line: end of headers
@@ -266,7 +266,7 @@ class _ExpectHeaders is _ParserState
             return _ParseContinue
           end
 
-          match _content_length
+          match \exhaustive\ _content_length
           | let cl: USize if cl > 0 =>
             // Check body size limit before entering body state
             if cl > _config.max_body_size then
@@ -305,7 +305,7 @@ class _ExpectHeaders is _ParserState
 
         // Find colon separator
         let colon_pos =
-          match _BufferScan.find_byte(p.buf, ':', p.pos, crlf)
+          match \exhaustive\ _BufferScan.find_byte(p.buf, ':', p.pos, crlf)
           | let i: USize => i
           | None => return MalformedHeaders
           end
@@ -347,9 +347,9 @@ class _ExpectHeaders is _ParserState
         // Detect special headers
         let lower_name: String val = name.lower()
         if lower_name == "content-length" then
-          match _parse_content_length(value)
+          match \exhaustive\ _parse_content_length(value)
           | let cl: USize =>
-            match _content_length
+            match \exhaustive\ _content_length
             | let existing: USize =>
               if existing != cl then
                 return InvalidContentLength
@@ -447,7 +447,7 @@ class _ExpectChunkHeader is _ParserState
     _config = config
 
   fun ref parse(p: _ResponseParser ref): _ParseResult =>
-    match _BufferScan.find_crlf(p.buf, p.pos)
+    match \exhaustive\ _BufferScan.find_crlf(p.buf, p.pos)
     | let crlf: USize =>
       let line_len = crlf - p.pos
       if line_len > _config.max_chunk_header_size then
@@ -459,7 +459,7 @@ class _ExpectChunkHeader is _ParserState
 
       // Find optional chunk extension (semicolon)
       let size_end =
-        match _BufferScan.find_byte(p.buf, ';', p.pos, crlf)
+        match \exhaustive\ _BufferScan.find_byte(p.buf, ';', p.pos, crlf)
         | let i: USize => i
         | None => crlf
         end
@@ -573,7 +573,7 @@ class _ExpectChunkTrailer is _ParserState
 
   fun ref parse(p: _ResponseParser ref): _ParseResult =>
     while true do
-      match _BufferScan.find_crlf(p.buf, p.pos)
+      match \exhaustive\ _BufferScan.find_crlf(p.buf, p.pos)
       | let crlf: USize =>
         if crlf == p.pos then
           // Empty line: end of chunked message

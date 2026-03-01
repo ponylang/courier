@@ -7,7 +7,7 @@ primitive URL
   discarded.
 
   ```pony
-  match URL.parse("https://example.com:8443/api/v1?key=value")
+  match \exhaustive\ URL.parse("https://example.com:8443/api/v1?key=value")
   | let url: ParsedURL =>
     // url.scheme == SchemeHTTPS
     // url.host == "example.com"
