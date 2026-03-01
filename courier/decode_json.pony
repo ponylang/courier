@@ -19,7 +19,7 @@ primitive DecodeJSON[A: Any val]
   use json = "json"
 
   // In on_response_complete():
-  match \exhaustive\ DecodeJSON[User](response, UserDecoder)
+  match DecodeJSON[User](response, UserDecoder)
   | let user: User =>
     env.out.print("Hello, " + user.name)
   | let err: json.JsonParseError =>
@@ -42,7 +42,7 @@ primitive DecodeJSON[A: Any val]
     the JSON doesn't match the decoder's expected structure, or the decoded
     value on success.
     """
-    match \exhaustive\ ResponseJSON(response)
+    match ResponseJSON(response)
     | let value: json.JsonValue => decoder(value)
     | let err: json.JsonParseError => err
     end

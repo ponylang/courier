@@ -12,7 +12,7 @@ primitive ResponseJSON
   ```pony
   use json = "json"
 
-  match \exhaustive\ ResponseJSON(response)
+  match ResponseJSON(response)
   | let value: json.JsonValue =>
     // work with the parsed JSON
   | let err: json.JsonParseError =>
