@@ -25,15 +25,15 @@ class \nodoc\ iso _PropertyCollectorChunkAccumulation
     var expected_byte: U8 = 0
     for chunk_size in arg1.values() do
       let chunk =
-      recover val
-        let c = Array[U8](chunk_size)
-        var i: USize = 0
-        while i < chunk_size do
-          c.push(expected_byte)
-          i = i + 1
+        recover val
+          let c = Array[U8](chunk_size)
+          var i: USize = 0
+          while i < chunk_size do
+            c.push(expected_byte)
+            i = i + 1
+          end
+          c
         end
-        c
-      end
       expected_byte = expected_byte + 1
       expected_size = expected_size + chunk_size
       collector.add_chunk(chunk)
