@@ -15,7 +15,7 @@ class \nodoc\ iso _TestResponseJSONValidObject is UnitTest
 
   fun apply(h: TestHelper) =>
     let response = _MakeJSONResponse("{\"name\": \"Alice\", \"age\": 30}")
-    match ResponseJSON(response)
+    match \exhaustive\ ResponseJSON(response)
     | let value: json.JsonValue =>
       match value
       | let obj: json.JsonObject =>
@@ -44,7 +44,7 @@ class \nodoc\ iso _TestResponseJSONValidArray is UnitTest
 
   fun apply(h: TestHelper) =>
     let response = _MakeJSONResponse("[1, 2, 3]")
-    match ResponseJSON(response)
+    match \exhaustive\ ResponseJSON(response)
     | let value: json.JsonValue =>
       match value
       | let arr: json.JsonArray =>
@@ -62,7 +62,7 @@ class \nodoc\ iso _TestResponseJSONInvalid is UnitTest
 
   fun apply(h: TestHelper) =>
     let response = _MakeJSONResponse("not json {{")
-    match ResponseJSON(response)
+    match \exhaustive\ ResponseJSON(response)
     | let value: json.JsonValue =>
       h.fail("should fail on invalid JSON")
     | let err: json.JsonParseError =>
@@ -75,7 +75,7 @@ class \nodoc\ iso _TestResponseJSONEmptyBody is UnitTest
 
   fun apply(h: TestHelper) =>
     let response = _MakeJSONResponse("")
-    match ResponseJSON(response)
+    match \exhaustive\ ResponseJSON(response)
     | let value: json.JsonValue =>
       h.fail("empty body should fail to parse")
     | let err: json.JsonParseError =>

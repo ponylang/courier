@@ -56,7 +56,7 @@ class _ResponseParser
 
     var continue_parsing = true
     while continue_parsing do
-      match state.parse(this)
+      match \exhaustive\ state.parse(this)
       | _ParseContinue =>
         if _failed then break end
       | _ParseNeedMore => continue_parsing = false

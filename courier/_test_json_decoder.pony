@@ -72,7 +72,7 @@ class \nodoc\ iso _PropertyDecodeJSONParseErrorPropagation
 
   fun property(sample: String val, h: PropertyHelper) =>
     let response = _MakeJSONResponse(sample)
-    match DecodeJSON[String](response, _AlwaysSucceedDecoder)
+    match \exhaustive\ DecodeJSON[String](response, _AlwaysSucceedDecoder)
     | let s: String =>
       h.fail("expected JsonParseError, got success: " + s)
     | let err: json.JsonParseError => None
@@ -89,7 +89,7 @@ class \nodoc\ iso _PropertyDecodeJSONDecodeErrorPropagation
 
   fun property(sample: String val, h: PropertyHelper) =>
     let response = _MakeJSONResponse(sample)
-    match DecodeJSON[String](response, _AlwaysFailDecoder)
+    match \exhaustive\ DecodeJSON[String](response, _AlwaysFailDecoder)
     | let s: String =>
       h.fail("expected JSONDecodeError, got success: " + s)
     | let err: json.JsonParseError =>
@@ -105,7 +105,7 @@ class \nodoc\ iso _PropertyDecodeJSONIdentityDecoder is Property1[String val]
 
   fun property(sample: String val, h: PropertyHelper) =>
     let response = _MakeJSONResponse(sample)
-    match DecodeJSON[String](response, _AlwaysSucceedDecoder)
+    match \exhaustive\ DecodeJSON[String](response, _AlwaysSucceedDecoder)
     | let s: String => None
     | let err: json.JsonParseError =>
       h.fail("expected success, got JsonParseError: " + err.string())
@@ -124,7 +124,7 @@ class \nodoc\ iso _TestJSONDecoderSuccessfulDecode is UnitTest
     let value = json.JsonObject
       .update("id", I64(1))
       .update("title", "test")
-    match _TodoDecoder(value)
+    match \exhaustive\ _TodoDecoder(value)
     | let todo: _Todo =>
       h.assert_eq[I64](1, todo.id)
       h.assert_eq[String val]("test", todo.title)
@@ -139,7 +139,7 @@ class \nodoc\ iso _TestJSONDecoderMissingField is UnitTest
   fun apply(h: TestHelper) =>
     let value = json.JsonObject
       .update("id", I64(1))
-    match _TodoDecoder(value)
+    match \exhaustive\ _TodoDecoder(value)
     | let todo: _Todo =>
       h.fail("expected JSONDecodeError for missing 'title'")
     | let err: JSONDecodeError =>
@@ -154,7 +154,7 @@ class \nodoc\ iso _TestJSONDecoderWrongType is UnitTest
     let value = json.JsonObject
       .update("id", "not_a_number")
       .update("title", "test")
-    match _TodoDecoder(value)
+    match \exhaustive\ _TodoDecoder(value)
     | let todo: _Todo =>
       h.fail("expected JSONDecodeError for wrong type on 'id'")
     | let err: JSONDecodeError =>
@@ -167,7 +167,7 @@ class \nodoc\ iso _TestDecodeJSONValidJSON is UnitTest
 
   fun apply(h: TestHelper) =>
     let response = _MakeJSONResponse("{\"id\": 42, \"title\": \"hello\"}")
-    match DecodeJSON[_Todo](response, _TodoDecoder)
+    match \exhaustive\ DecodeJSON[_Todo](response, _TodoDecoder)
     | let todo: _Todo =>
       h.assert_eq[I64](42, todo.id)
       h.assert_eq[String val]("hello", todo.title)
@@ -183,7 +183,7 @@ class \nodoc\ iso _TestDecodeJSONInvalidJSON is UnitTest
 
   fun apply(h: TestHelper) =>
     let response = _MakeJSONResponse("not json {{")
-    match DecodeJSON[_Todo](response, _TodoDecoder)
+    match \exhaustive\ DecodeJSON[_Todo](response, _TodoDecoder)
     | let todo: _Todo =>
       h.fail("expected JsonParseError")
     | let err: json.JsonParseError =>
@@ -200,7 +200,7 @@ class \nodoc\ iso _TestDecodeJSONWrongStructure is UnitTest
 
   fun apply(h: TestHelper) =>
     let response = _MakeJSONResponse("[1, 2, 3]")
-    match DecodeJSON[_Todo](response, _TodoDecoder)
+    match \exhaustive\ DecodeJSON[_Todo](response, _TodoDecoder)
     | let todo: _Todo =>
       h.fail("expected JSONDecodeError")
     | let err: json.JsonParseError =>

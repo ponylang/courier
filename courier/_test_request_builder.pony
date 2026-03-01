@@ -202,7 +202,7 @@ class \nodoc\ iso _TestBuilderDeleteWithBody is UnitTest
     let req2 = Request.delete("/item/1")
       .json_body("{\"reason\": \"cleanup\"}")
       .build()
-    match req2.body
+    match \exhaustive\ req2.body
     | let b: Array[U8] val =>
       h.assert_true(b.size() > 0, "DELETE with body should have body")
     else
