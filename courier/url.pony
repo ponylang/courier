@@ -23,7 +23,9 @@ primitive URL
   """
 
   fun parse(url: String): (ParsedURL val | URLParseError) =>
-    """Parse a URL string into its components, or return an error."""
+    """
+    Parse a URL string into its components, or return an error.
+    """
     // Find :// separator
     let sep: ISize = try url.find("://")? else return MissingScheme end
     if sep == 0 then return MissingScheme end
@@ -194,7 +196,9 @@ primitive URL
     ParsedURL._create(scheme, host, port, path, query)
 
   fun _all_digits(s: String box): Bool =>
-    """True if every byte in `s` is an ASCII digit."""
+    """
+    True if every byte in `s` is an ASCII digit.
+    """
     for byte in s.values() do
       if (byte < '0') or (byte > '9') then return false end
     end

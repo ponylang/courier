@@ -1,11 +1,17 @@
 primitive SendRequestOK
-  """Request was serialized and sent successfully."""
+  """
+  Request was serialized and sent successfully.
+  """
 
 primitive ConnectionClosed
-  """Connection is not open, or a send failed and the connection was closed."""
+  """
+  Connection is not open, or a send failed and the connection was closed.
+  """
 
 primitive ResponsePending
-  """A response to a previous request is still in progress."""
+  """
+  A response to a previous request is still in progress.
+  """
 
 type SendRequestError is (ConnectionClosed | ResponsePending)
   """Error returned by `send_request()` when the request cannot be sent."""

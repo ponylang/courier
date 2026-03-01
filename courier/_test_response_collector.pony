@@ -24,7 +24,8 @@ class \nodoc\ iso _PropertyCollectorChunkAccumulation
     var expected_size: USize = 0
     var expected_byte: U8 = 0
     for chunk_size in arg1.values() do
-      let chunk = recover val
+      let chunk =
+      recover val
         let c = Array[U8](chunk_size)
         var i: USize = 0
         while i < chunk_size do
@@ -76,17 +77,15 @@ class \nodoc\ iso _PropertyCollectorPreservesResponseMetadata
 // ---------------------------------------------------------------------------
 // Example-based tests
 // ---------------------------------------------------------------------------
-
 class \nodoc\ iso _TestCollectorBuildCorrectness is UnitTest
   """Built response has correct version, status, reason, headers, and body."""
   fun name(): String => "response_collector/build_correctness"
 
   fun apply(h: TestHelper) =>
-    let hdrs = recover val
-      let h' = Headers
-      h'.set("Content-Type", "text/plain")
-      h'
-    end
+    let hdrs =
+      recover val
+        Headers .> set("Content-Type", "text/plain")
+      end
     let response = Response(HTTP10, 201, "Created", hdrs)
     let collector = ResponseCollector
     collector.set_response(response)
@@ -117,8 +116,9 @@ class \nodoc\ iso _TestCollectorEmptyBody is UnitTest
   fun name(): String => "response_collector/empty_body"
 
   fun apply(h: TestHelper) =>
-    let response = Response(HTTP11, 204, "No Content",
-      recover val Headers end)
+    let response =
+      Response(
+        HTTP11, 204, "No Content", recover val Headers end)
     let collector = ResponseCollector
     collector.set_response(response)
 

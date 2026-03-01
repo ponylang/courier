@@ -12,11 +12,12 @@ class \nodoc\ iso _PropertySerializerContainsMethod
 
   fun gen(): Generator[String val] =>
     Generators.one_of[String val](
-      ["GET"; "POST"; "PUT"; "DELETE"; "HEAD"
-       "OPTIONS"; "PATCH"; "TRACE"])
+      [ "GET"; "POST"; "PUT"; "DELETE"; "HEAD"
+        "OPTIONS"; "PATCH"; "TRACE"])
 
   fun ref property(arg1: String val, ph: PropertyHelper) =>
-    let method = match Methods.parse(arg1)
+    let method =
+      match Methods.parse(arg1)
       | let m: Method => m
       else
         ph.fail("should parse: " + arg1)
@@ -75,15 +76,16 @@ class \nodoc\ iso _PropertySerializerAutoContentLength
     Generators.usize(1, 100)
 
   fun ref property(arg1: USize, ph: PropertyHelper) =>
-    let body = recover val
-      let b = Array[U8](arg1)
-      var i: USize = 0
-      while i < arg1 do
-        b.push('X')
-        i = i + 1
+    let body =
+      recover val
+        let b = Array[U8](arg1)
+        var i: USize = 0
+        while i < arg1 do
+          b.push('X')
+          i = i + 1
+        end
+        b
       end
-      b
-    end
     let request = HTTPRequest(POST, "/data" where body' = body)
     let serialized: String val =
       String.from_iso_array(
@@ -96,7 +98,6 @@ class \nodoc\ iso _PropertySerializerAutoContentLength
 // ---------------------------------------------------------------------------
 // Example-based tests
 // ---------------------------------------------------------------------------
-
 class \nodoc\ iso _TestSerializerKnownGood is UnitTest
   """Known request -> known wire bytes."""
   fun name(): String => "serializer/known_good"
@@ -155,11 +156,11 @@ class \nodoc\ iso _TestSerializerUserHostTakesPrecedence is UnitTest
   fun name(): String => "serializer/user_host_precedence"
 
   fun apply(h: TestHelper) =>
-    let hdrs = recover val
-      let h' = Headers
-      h'.set("Host", "custom.host.com")
-      h'
-    end
+    let hdrs =
+      recover val
+        Headers
+          .> set("Host", "custom.host.com")
+      end
     let request = HTTPRequest(GET, "/" where headers' = hdrs)
     let serialized: String val =
       String.from_iso_array(
@@ -179,13 +180,15 @@ class \nodoc\ iso _TestSerializerUserContentLengthTakesPrecedence
 
   fun apply(h: TestHelper) =>
     let body: Array[U8] val = [as U8: 'H'; 'i']
-    let hdrs = recover val
-      let h' = Headers
-      h'.set("Content-Length", "999")
-      h'
-    end
-    let request = HTTPRequest(POST, "/data"
-      where headers' = hdrs, body' = body)
+    let hdrs =
+      recover val
+        Headers
+          .> set("Content-Length", "999")
+      end
+    let request =
+      HTTPRequest(
+        POST, "/data"
+        where headers' = hdrs, body' = body)
     let serialized: String val =
       String.from_iso_array(
         _RequestSerializer(request, "example.com", "80"))

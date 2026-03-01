@@ -8,5 +8,7 @@ primitive BearerAuth
   """
 
   fun apply(token: String): (String, String) =>
-    """Build the Bearer auth header from `token`."""
+    """
+    Build the Bearer auth header from `token`.
+    """
     ("authorization", "Bearer " + token)

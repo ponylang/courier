@@ -77,8 +77,13 @@ class HTTPClientConnection is
     _port = port
     _parser = _ResponseParser(this, config._parser_config())
     _tcp_connection =
-      lori.TCPConnection.client(auth, host, port, config.from,
-        client_actor, this)
+      lori.TCPConnection.client(
+        auth,
+        host,
+        port,
+        config.from,
+        client_actor,
+        this)
 
   new ssl(
     auth: lori.TCPConnectAuth,
@@ -101,11 +106,19 @@ class HTTPClientConnection is
     _port = port
     _parser = _ResponseParser(this, config._parser_config())
     _tcp_connection =
-      lori.TCPConnection.ssl_client(auth, ssl_ctx, host, port,
-        config.from, client_actor, this)
+      lori.TCPConnection.ssl_client(
+        auth,
+        ssl_ctx,
+        host,
+        port,
+        config.from,
+        client_actor,
+        this)
 
   fun ref _connection(): lori.TCPConnection =>
-    """Return the underlying TCP connection."""
+    """
+    Return the underlying TCP connection.
+    """
     _tcp_connection
 
   fun ref send_request(request: HTTPRequest val): SendRequestResult =>
@@ -153,7 +166,6 @@ class HTTPClientConnection is
   //
   // ClientLifecycleEventReceiver
   //
-
   fun ref _on_connected() =>
     match _config
     | let c: ClientConnectionConfig =>
@@ -188,7 +200,6 @@ class HTTPClientConnection is
   //
   // _ResponseParserNotify — forwarding parser events to receiver
   //
-
   fun ref response_received(
     status: U16,
     reason: String val,
@@ -223,9 +234,10 @@ class HTTPClientConnection is
   //
   // Internal methods called by state classes
   //
-
   fun ref _feed_parser(data: Array[U8] iso) =>
-    """Feed incoming data to the response parser."""
+    """
+    Feed incoming data to the response parser.
+    """
     match _parser
     | let p: _ResponseParser => p.parse(consume data)
     end
@@ -248,21 +260,27 @@ class HTTPClientConnection is
     _state = _Closed
 
   fun ref _handle_throttled() =>
-    """Apply backpressure: mute the TCP connection and notify the receiver."""
+    """
+    Apply backpressure: mute the TCP connection and notify the receiver.
+    """
     _tcp_connection.mute()
     match _lifecycle_event_receiver
     | let r: HTTPClientLifecycleEventReceiver ref => r.on_throttled()
     end
 
   fun ref _handle_unthrottled() =>
-    """Release backpressure: unmute the TCP connection and notify."""
+    """
+    Release backpressure: unmute the TCP connection and notify.
+    """
     _tcp_connection.unmute()
     match _lifecycle_event_receiver
     | let r: HTTPClientLifecycleEventReceiver ref => r.on_unthrottled()
     end
 
   fun ref _handle_idle_timeout() =>
-    """Close the connection on idle timeout."""
+    """
+    Close the connection on idle timeout.
+    """
     _close_connection()
 
   fun ref _close_connection() =>
@@ -278,7 +296,9 @@ class HTTPClientConnection is
     """
     match _state
     | let _: _Active =>
-      match _parser | let p: _ResponseParser => p.stop() end
+      match _parser
+      | let p: _ResponseParser => p.stop()
+      end
       match _lifecycle_event_receiver
       | let r: HTTPClientLifecycleEventReceiver ref => r.on_closed()
       end

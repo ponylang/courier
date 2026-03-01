@@ -1,7 +1,7 @@
 use json = "json"
 use "pony_test"
 
-primitive \nodoc\ _MakeJsonResponse
+primitive \nodoc\ _MakeJSONResponse
   fun apply(body_str: String): HTTPResponse val =>
     let body: Array[U8] val = body_str.array()
     HTTPResponse(HTTP11, 200, "OK", recover val Headers end, body)
@@ -9,14 +9,13 @@ primitive \nodoc\ _MakeJsonResponse
 // ---------------------------------------------------------------------------
 // Example-based tests
 // ---------------------------------------------------------------------------
-
-class \nodoc\ iso _TestResponseJsonValidObject is UnitTest
+class \nodoc\ iso _TestResponseJSONValidObject is UnitTest
   """Valid JSON object body parses to expected structure."""
   fun name(): String => "response_json/valid_object"
 
   fun apply(h: TestHelper) =>
-    let response = _MakeJsonResponse("{\"name\": \"Alice\", \"age\": 30}")
-    match ResponseJson(response)
+    let response = _MakeJSONResponse("{\"name\": \"Alice\", \"age\": 30}")
+    match ResponseJSON(response)
     | let value: json.JsonValue =>
       match value
       | let obj: json.JsonObject =>
@@ -39,13 +38,13 @@ class \nodoc\ iso _TestResponseJsonValidObject is UnitTest
       h.fail("should not fail: " + err.string())
     end
 
-class \nodoc\ iso _TestResponseJsonValidArray is UnitTest
+class \nodoc\ iso _TestResponseJSONValidArray is UnitTest
   """Valid JSON array body parses correctly."""
   fun name(): String => "response_json/valid_array"
 
   fun apply(h: TestHelper) =>
-    let response = _MakeJsonResponse("[1, 2, 3]")
-    match ResponseJson(response)
+    let response = _MakeJSONResponse("[1, 2, 3]")
+    match ResponseJSON(response)
     | let value: json.JsonValue =>
       match value
       | let arr: json.JsonArray =>
@@ -57,26 +56,26 @@ class \nodoc\ iso _TestResponseJsonValidArray is UnitTest
       h.fail("should not fail: " + err.string())
     end
 
-class \nodoc\ iso _TestResponseJsonInvalid is UnitTest
+class \nodoc\ iso _TestResponseJSONInvalid is UnitTest
   """Invalid JSON body returns JsonParseError."""
   fun name(): String => "response_json/invalid"
 
   fun apply(h: TestHelper) =>
-    let response = _MakeJsonResponse("not json {{")
-    match ResponseJson(response)
+    let response = _MakeJSONResponse("not json {{")
+    match ResponseJSON(response)
     | let value: json.JsonValue =>
       h.fail("should fail on invalid JSON")
     | let err: json.JsonParseError =>
       h.assert_true(err.message.size() > 0, "error should have a message")
     end
 
-class \nodoc\ iso _TestResponseJsonEmptyBody is UnitTest
+class \nodoc\ iso _TestResponseJSONEmptyBody is UnitTest
   """Empty body returns JsonParseError."""
   fun name(): String => "response_json/empty_body"
 
   fun apply(h: TestHelper) =>
-    let response = _MakeJsonResponse("")
-    match ResponseJson(response)
+    let response = _MakeJSONResponse("")
+    match ResponseJSON(response)
     | let value: json.JsonValue =>
       h.fail("empty body should fail to parse")
     | let err: json.JsonParseError =>

@@ -31,7 +31,9 @@ class \nodoc\ _TestResponseParserNotify is _ResponseParserNotify
     errors.push(err)
 
   fun ref collected_body_string(): String val =>
-    """Concatenate all body chunks into a single string."""
+    """
+    Concatenate all body chunks into a single string.
+    """
     let out = String
     for chunk in body_chunks.values() do
       out.append(chunk)
@@ -41,7 +43,6 @@ class \nodoc\ _TestResponseParserNotify is _ResponseParserNotify
 // ---------------------------------------------------------------------------
 // Property-based tests
 // ---------------------------------------------------------------------------
-
 class \nodoc\ iso _PropertyValidStatusLineParsesCorrectly
   is Property1[(U16, String val)]
   """
@@ -55,8 +56,8 @@ class \nodoc\ iso _PropertyValidStatusLineParsesCorrectly
     Generators.zip2[U16, String val](
       Generators.u16(200, 599),
       Generators.one_of[String val](
-        ["OK"; "Not Found"; "Internal Server Error"
-         "Created"; "Moved Permanently"; ""]))
+        [ "OK"; "Not Found"; "Internal Server Error"
+          "Created"; "Moved Permanently"; "" ]))
 
   fun ref property(arg1: (U16, String val), ph: PropertyHelper) =>
     (let status, let reason) = arg1
@@ -67,12 +68,12 @@ class \nodoc\ iso _PropertyValidStatusLineParsesCorrectly
     let parser = _ResponseParser(notify)
     parser.parse(recover raw.array().clone() end)
 
-    ph.assert_eq[USize](1, notify.responses.size(),
-      "should have 1 response")
-    ph.assert_eq[USize](1, notify.completed,
-      "should have 1 completion")
-    ph.assert_eq[USize](0, notify.errors.size(),
-      "should have 0 errors")
+    ph.assert_eq[USize](
+      1, notify.responses.size(), "should have 1 response")
+    ph.assert_eq[USize](
+      1, notify.completed, "should have 1 completion")
+    ph.assert_eq[USize](
+      0, notify.errors.size(), "should have 0 errors")
     try
       (let s, let r, let v, _) = notify.responses(0)?
       ph.assert_eq[U16](status, s, "status mismatch")
@@ -90,29 +91,33 @@ class \nodoc\ iso _PropertyInvalidStatusLineRejected
   fun name(): String => "parser/invalid_status_line_rejected"
 
   fun gen(): Generator[String val] =>
-    Generators.frequency[String val]([
-      as WeightedGenerator[String val]:
-      // No space after version
-      (1, Generators.unit[String val]("HTTP/1.1200 OK\r\n\r\n"))
-      // Non-numeric status
-      (1, Generators.unit[String val]("HTTP/1.1 abc OK\r\n\r\n"))
-      // Too short
-      (1, Generators.unit[String val]("HTTP/1.1\r\n\r\n"))
-      // Two-digit status
-      (1, Generators.unit[String val]("HTTP/1.1 20 OK\r\n\r\n"))
-      // Random garbage
-      (1, Generators.ascii(5, 30)
-        .map[String val]({(s) => s + "\r\n\r\n" }))
-    ])
+    Generators.frequency[String val](
+      [ as WeightedGenerator[String val]:
+        // No space after version
+        (1, Generators.unit[String val]("HTTP/1.1200 OK\r\n\r\n"))
+        // Non-numeric status
+        (1, Generators.unit[String val]("HTTP/1.1 abc OK\r\n\r\n"))
+        // Too short
+        (1, Generators.unit[String val]("HTTP/1.1\r\n\r\n"))
+        // Two-digit status
+        (1, Generators.unit[String val]("HTTP/1.1 20 OK\r\n\r\n"))
+        // Random garbage
+        (1, Generators.ascii(5, 30)
+          .map[String val]({(s) => s + "\r\n\r\n" }))
+      ])
 
   fun ref property(arg1: String val, ph: PropertyHelper) =>
     let notify: _TestResponseParserNotify ref = _TestResponseParserNotify
     let parser = _ResponseParser(notify)
     parser.parse(recover arg1.array().clone() end)
 
-    ph.assert_eq[USize](0, notify.responses.size(),
+    ph.assert_eq[USize](
+      0,
+      notify.responses.size(),
       "should have 0 responses for: " + arg1)
-    ph.assert_eq[USize](1, notify.errors.size(),
+    ph.assert_eq[USize](
+      1,
+      notify.errors.size(),
       "should have 1 error for: " + arg1)
 
 class \nodoc\ iso _PropertyHeadersRoundtrip
@@ -124,9 +129,10 @@ class \nodoc\ iso _PropertyHeadersRoundtrip
   fun name(): String => "parser/headers_roundtrip"
 
   fun gen(): Generator[Array[(String val, String val)] ref] =>
-    let pair_gen = Generators.zip2[String val, String val](
-      Generators.ascii_letters(1, 10),
-      Generators.ascii_letters(1, 20))
+    let pair_gen =
+      Generators.zip2[String val, String val](
+        Generators.ascii_letters(1, 10),
+        Generators.ascii_letters(1, 20))
     Generators.array_of[
       (String val, String val)](pair_gen, 1, 5)
 
@@ -145,8 +151,8 @@ class \nodoc\ iso _PropertyHeadersRoundtrip
     let parser = _ResponseParser(notify)
     parser.parse(recover raw.array().clone() end)
 
-    ph.assert_eq[USize](1, notify.responses.size(),
-      "should have 1 response")
+    ph.assert_eq[USize](
+      1, notify.responses.size(), "should have 1 response")
     try
       (_, _, _, let headers) = notify.responses(0)?
       let seen = Array[String val]
@@ -162,7 +168,9 @@ class \nodoc\ iso _PropertyHeadersRoundtrip
           seen.push(lower)
           match headers.get(hdr_name)
           | let v: String val =>
-            ph.assert_eq[String val](hdr_value, v,
+            ph.assert_eq[String val](
+              hdr_value,
+              v,
               "header " + hdr_name + " mismatch")
           | None =>
             ph.fail("header " + hdr_name + " not found")
@@ -185,35 +193,37 @@ class \nodoc\ iso _PropertyFixedBodyDelivered
     Generators.usize(1, 200)
 
   fun ref property(arg1: USize, ph: PropertyHelper) =>
-    let body = recover val
-      let b = Array[U8](arg1)
-      var i: USize = 0
-      while i < arg1 do
-        b.push('A' + (i % 26).u8())
-        i = i + 1
+    let body =
+      recover val
+        let b = Array[U8](arg1)
+        var i: USize = 0
+        while i < arg1 do
+          b.push('A' + (i % 26).u8())
+          i = i + 1
+        end
+        b
       end
-      b
-    end
 
-    let raw = recover val
-      let r = String
-      r.append("HTTP/1.1 200 OK\r\n")
-      r.append("Content-Length: " + arg1.string() + "\r\n")
-      r.append("\r\n")
-      r.append(body)
-      r
-    end
+    let raw =
+      recover val
+        let r = String
+          .> append("HTTP/1.1 200 OK\r\n")
+          .> append("Content-Length: " + arg1.string() + "\r\n")
+          .> append("\r\n")
+          .> append(body)
+        r
+      end
 
     let notify: _TestResponseParserNotify ref = _TestResponseParserNotify
     let parser = _ResponseParser(notify)
     parser.parse(recover raw.array().clone() end)
 
-    ph.assert_eq[USize](1, notify.responses.size(),
-      "should have 1 response")
-    ph.assert_eq[USize](1, notify.completed,
-      "should have 1 completion")
-    ph.assert_eq[USize](0, notify.errors.size(),
-      "should have 0 errors")
+    ph.assert_eq[USize](
+      1, notify.responses.size(), "should have 1 response")
+    ph.assert_eq[USize](
+      1, notify.completed, "should have 1 completion")
+    ph.assert_eq[USize](
+      0, notify.errors.size(), "should have 0 errors")
 
     var total_body: USize = 0
     for chunk in notify.body_chunks.values() do
@@ -226,7 +236,9 @@ class \nodoc\ iso _PropertyFixedBodyDelivered
       try
         var ci: USize = 0
         while ci < chunk.size() do
-          ph.assert_eq[U8](body(byte_idx)?, chunk(ci)?,
+          ph.assert_eq[U8](
+            body(byte_idx)?,
+            chunk(ci)?,
             "body byte mismatch at " + byte_idx.string())
           byte_idx = byte_idx + 1
           ci = ci + 1
@@ -253,15 +265,16 @@ class \nodoc\ iso _PropertyChunkedBodyDelivered
       "\r\n"
 
     for size in arg1.values() do
-      let chunk_data: String val = recover val
-        let s = String(size)
-        var i: USize = 0
-        while i < size do
-          s.push('A' + (i % 26).u8())
-          i = i + 1
+      let chunk_data: String val =
+        recover val
+          let s = String(size)
+          var i: USize = 0
+          while i < size do
+            s.push('A' + (i % 26).u8())
+            i = i + 1
+          end
+          s
         end
-        s
-      end
       let hex_size: String val =
         Format.int[USize](size where fmt = FormatHexBare)
       raw = raw + hex_size + "\r\n" + chunk_data + "\r\n"
@@ -273,18 +286,20 @@ class \nodoc\ iso _PropertyChunkedBodyDelivered
     let parser = _ResponseParser(notify)
     parser.parse(recover raw.array().clone() end)
 
-    ph.assert_eq[USize](1, notify.responses.size(),
-      "should have 1 response")
-    ph.assert_eq[USize](1, notify.completed,
-      "should have 1 completion")
-    ph.assert_eq[USize](0, notify.errors.size(),
-      "should have 0 errors")
+    ph.assert_eq[USize](
+      1, notify.responses.size(), "should have 1 response")
+    ph.assert_eq[USize](
+      1, notify.completed, "should have 1 completion")
+    ph.assert_eq[USize](
+      0, notify.errors.size(), "should have 0 errors")
 
     var total_received: USize = 0
     for chunk in notify.body_chunks.values() do
       total_received = total_received + chunk.size()
     end
-    ph.assert_eq[USize](total_size, total_received,
+    ph.assert_eq[USize](
+      total_size,
+      total_received,
       "total body size mismatch")
 
 class \nodoc\ iso _PropertyStatusLineBoundary
@@ -298,26 +313,33 @@ class \nodoc\ iso _PropertyStatusLineBoundary
   fun gen(): Generator[(String val, Bool)] =>
     let valid_gen: Generator[(String val, Bool)] =
       Generators.one_of[String val](
-        ["200"; "201"; "204"; "301"; "302"; "304"
-         "400"; "401"; "403"; "404"; "500"; "502"; "503"; "599"])
+        [ "200"; "201"; "204"; "301"; "302"; "304"
+          "400"; "401"; "403"; "404"; "500"; "502"
+          "503"; "599" ])
         .map[(String val, Bool)]({(status) =>
           ("HTTP/1.1 " + status +
-           " OK\r\nContent-Length: 0\r\n\r\n", true) })
+            " OK\r\nContent-Length: 0\r\n\r\n", true)
+        })
 
     let invalid_gen: Generator[(String val, Bool)] =
-      Generators.frequency[String val]([
-        as WeightedGenerator[String val]:
-        (1, Generators.unit[String val]("HTTP/2.0 200 OK\r\n\r\n"))
-        (1, Generators.unit[String val]("HTTP/1.1 abc OK\r\n\r\n"))
-        (1, Generators.unit[String val]("GARBAGE\r\n\r\n"))
-        (1, Generators.unit[String val]("HTTP/1.1\r\n\r\n"))
-      ]).map[(String val, Bool)]({(s) => (s, false) })
+      Generators.frequency[String val](
+        [ as WeightedGenerator[String val]:
+          (1, Generators.unit[String val](
+            "HTTP/2.0 200 OK\r\n\r\n"))
+          (1, Generators.unit[String val](
+            "HTTP/1.1 abc OK\r\n\r\n"))
+          (1, Generators.unit[String val](
+            "GARBAGE\r\n\r\n"))
+          (1, Generators.unit[String val](
+            "HTTP/1.1\r\n\r\n"))
+        ]).map[(String val, Bool)](
+          {(s) => (s, false) })
 
-    Generators.frequency[(String val, Bool)]([
-      as WeightedGenerator[(String val, Bool)]:
-      (1, valid_gen)
-      (1, invalid_gen)
-    ])
+    Generators.frequency[(String val, Bool)](
+      [ as WeightedGenerator[(String val, Bool)]:
+        (1, valid_gen)
+        (1, invalid_gen)
+      ])
 
   fun ref property(arg1: (String val, Bool), ph: PropertyHelper) =>
     (let raw, let should_succeed) = arg1
@@ -326,21 +348,28 @@ class \nodoc\ iso _PropertyStatusLineBoundary
     parser.parse(recover raw.array().clone() end)
 
     if should_succeed then
-      ph.assert_eq[USize](1, notify.responses.size(),
+      ph.assert_eq[USize](
+        1,
+        notify.responses.size(),
         "valid response should parse")
-      ph.assert_eq[USize](0, notify.errors.size(),
+      ph.assert_eq[USize](
+        0,
+        notify.errors.size(),
         "valid response should have no errors")
     else
-      ph.assert_eq[USize](1, notify.errors.size(),
+      ph.assert_eq[USize](
+        1,
+        notify.errors.size(),
         "invalid response should produce error")
     end
 
 // ---------------------------------------------------------------------------
 // Example-based tests
 // ---------------------------------------------------------------------------
-
 class \nodoc\ iso _TestParserKnownGoodResponses is UnitTest
-  """Verify exact callback sequences for well-known HTTP responses."""
+  """
+  Verify exact callback sequences for well-known HTTP responses.
+  """
   fun name(): String => "parser/known_good_responses"
 
   fun apply(h: TestHelper) =>
@@ -438,11 +467,12 @@ class \nodoc\ iso _TestIncrementalByteByByte is UnitTest
     let arr = raw.array()
     while i < arr.size() do
       try
-        let byte = recover iso
-          let a = Array[U8](1)
-          a.push(arr(i)?)
-          a
-        end
+        let byte =
+          recover iso
+            let a = Array[U8](1)
+              .> push(arr(i)?)
+            a
+          end
         parser.parse(consume byte)
       end
       i = i + 1
@@ -507,10 +537,13 @@ class \nodoc\ iso _TestSizeLimitBody is UnitTest
       "0123456789"
     parser.parse(recover raw.array().clone() end)
 
-    h.assert_eq[USize](1, notify.errors.size(),
+    h.assert_eq[USize](
+      1,
+      notify.errors.size(),
       "fixed body: should have 1 error")
     try
-      h.assert_true(notify.errors(0)? is BodyTooLarge,
+      h.assert_true(
+        notify.errors(0)? is BodyTooLarge,
         "fixed body: should be BodyTooLarge")
     end
 
@@ -523,10 +556,13 @@ class \nodoc\ iso _TestSizeLimitBody is UnitTest
       "a\r\n0123456789\r\n0\r\n\r\n"
     parser2.parse(recover raw2.array().clone() end)
 
-    h.assert_eq[USize](1, notify2.errors.size(),
+    h.assert_eq[USize](
+      1,
+      notify2.errors.size(),
       "chunked body: should have 1 error")
     try
-      h.assert_true(notify2.errors(0)? is BodyTooLarge,
+      h.assert_true(
+        notify2.errors(0)? is BodyTooLarge,
         "chunked body: should be BodyTooLarge")
     end
 
@@ -547,7 +583,8 @@ class \nodoc\ iso _TestSizeLimitCloseDelimitedBody is UnitTest
 
     h.assert_eq[USize](1, notify.errors.size(), "should have 1 error")
     try
-      h.assert_true(notify.errors(0)? is BodyTooLarge,
+      h.assert_true(
+        notify.errors(0)? is BodyTooLarge,
         "should be BodyTooLarge")
     end
 
@@ -563,7 +600,8 @@ class \nodoc\ iso _TestInvalidContentLength is UnitTest
 
     h.assert_eq[USize](1, notify.errors.size(), "should have 1 error")
     try
-      h.assert_true(notify.errors(0)? is InvalidContentLength,
+      h.assert_true(
+        notify.errors(0)? is InvalidContentLength,
         "should be InvalidContentLength")
     end
 
@@ -582,7 +620,8 @@ class \nodoc\ iso _TestInvalidChunkSize is UnitTest
 
     h.assert_eq[USize](1, notify.errors.size(), "should have 1 error")
     try
-      h.assert_true(notify.errors(0)? is InvalidChunk,
+      h.assert_true(
+        notify.errors(0)? is InvalidChunk,
         "should be InvalidChunk")
     end
 
@@ -620,7 +659,8 @@ class \nodoc\ iso _TestHTTP10Version is UnitTest
 
     h.assert_eq[USize](1, notify.responses.size())
     try
-      h.assert_true(notify.responses(0)?._3 is HTTP10,
+      h.assert_true(
+        notify.responses(0)?._3 is HTTP10,
         "version should be HTTP/1.0")
     end
 
@@ -639,7 +679,9 @@ class \nodoc\ iso _TestInvalidVersion is UnitTest
     let notify: _TestResponseParserNotify ref = _TestResponseParserNotify
     let parser = _ResponseParser(notify)
     parser.parse(recover raw.array().clone() end)
-    h.assert_eq[USize](1, notify.errors.size(),
+    h.assert_eq[USize](
+      1,
+      notify.errors.size(),
       "should have 1 error for " + ver)
     try
       let err = notify.errors(0)?
@@ -715,7 +757,9 @@ class \nodoc\ iso _TestCloseDelimitedBody is UnitTest
     parser.parse(recover raw.array().clone() end)
 
     h.assert_eq[USize](1, notify.responses.size(), "1 response")
-    h.assert_eq[USize](0, notify.completed,
+    h.assert_eq[USize](
+      0,
+      notify.completed,
       "not completed yet (close-delimited)")
 
     // More data
@@ -786,7 +830,8 @@ class \nodoc\ iso _TestDuplicateContentLength is UnitTest
 
     h.assert_eq[USize](1, notify.errors.size(), "should have 1 error")
     try
-      h.assert_true(notify.errors(0)? is InvalidContentLength,
+      h.assert_true(
+        notify.errors(0)? is InvalidContentLength,
         "should be InvalidContentLength")
     end
 
@@ -811,9 +856,13 @@ class \nodoc\ iso _TestDataAfterError is UnitTest
     parser.parse(recover good.array().clone() end)
 
     // Should still have exactly 1 error and 0 responses
-    h.assert_eq[USize](1, notify.errors.size(),
+    h.assert_eq[USize](
+      1,
+      notify.errors.size(),
       "still 1 error after second parse")
-    h.assert_eq[USize](0, notify.responses.size(),
+    h.assert_eq[USize](
+      0,
+      notify.responses.size(),
       "0 responses (parser is failed)")
 
 class \nodoc\ iso _Test1xxSkipped is UnitTest
@@ -833,11 +882,15 @@ class \nodoc\ iso _Test1xxSkipped is UnitTest
     parser.parse(recover raw.array().clone() end)
 
     // Only the 200 should be delivered
-    h.assert_eq[USize](1, notify.responses.size(),
+    h.assert_eq[USize](
+      1,
+      notify.responses.size(),
       "should have 1 response (not 2)")
     h.assert_eq[USize](1, notify.completed, "1 completion")
     try
-      h.assert_eq[U16](200, notify.responses(0)?._1,
+      h.assert_eq[U16](
+        200,
+        notify.responses(0)?._1,
         "delivered response should be 200")
     end
     h.assert_eq[String val](
@@ -859,8 +912,8 @@ class \nodoc\ iso _TestMultiple1xx is UnitTest
     let parser = _ResponseParser(notify)
     parser.parse(recover raw.array().clone() end)
 
-    h.assert_eq[USize](1, notify.responses.size(),
-      "should have 1 response")
+    h.assert_eq[USize](
+      1, notify.responses.size(), "should have 1 response")
     h.assert_eq[USize](1, notify.completed, "1 completion")
     try
       h.assert_eq[U16](200, notify.responses(0)?._1)

@@ -50,7 +50,6 @@ class \nodoc\ iso _PropertyBearerAuthFormat
 // ---------------------------------------------------------------------------
 // Example-based tests
 // ---------------------------------------------------------------------------
-
 class \nodoc\ iso _TestBasicAuthKnownGood is UnitTest
   """Known Basic auth encoding (RFC 7617 example)."""
   fun name(): String => "basic_auth/known_good"

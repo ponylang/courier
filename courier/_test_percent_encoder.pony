@@ -14,7 +14,8 @@ class \nodoc\ iso _PropertyQueryUnreservedPassthrough
   fun name(): String => "percent_encoder/query_unreserved_passthrough"
 
   fun gen(): Generator[String val] =>
-    let unreserved = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
+    let unreserved =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
     Generators.ascii(1, 50 where range = ASCIIAll)
       .filter({(s) =>
         var ok = true
@@ -50,12 +51,16 @@ class \nodoc\ iso _PropertyQueryReservedEncoded
     })
 
   fun ref property(arg1: U8, ph: PropertyHelper) =>
-    let input = recover val String.>push(arg1) end
+    let input = recover val String .> push(arg1) end
     let encoded: String val = _PercentEncoder.query(input)
-    ph.assert_eq[USize](3, encoded.size(),
+    ph.assert_eq[USize](
+      3,
+      encoded.size(),
       "reserved byte should encode to 3-char %XX")
     try
-      ph.assert_eq[U8]('%', encoded(0)?,
+      ph.assert_eq[U8](
+        '%',
+        encoded(0)?,
         "first char should be %")
     else
       ph.fail("could not read encoded output")
@@ -109,15 +114,15 @@ class \nodoc\ iso _PropertyQueryParamsRoundtrip
 // ---------------------------------------------------------------------------
 // Example-based tests
 // ---------------------------------------------------------------------------
-
 class \nodoc\ iso _TestQueryParamsKnownGood is UnitTest
   """Known query string encoding."""
   fun name(): String => "query_params/known_good"
 
   fun apply(h: TestHelper) =>
-    let params = recover val
-      [("q", "hello world"); ("page", "1")]
-    end
+    let params =
+      recover val
+        [("q", "hello world"); ("page", "1")]
+      end
     let result = QueryParams(params)
     h.assert_eq[String val]("q=hello%20world&page=1", result)
 
@@ -143,9 +148,10 @@ class \nodoc\ iso _TestFormEncoderKnownGood is UnitTest
   fun name(): String => "form_encoder/known_good"
 
   fun apply(h: TestHelper) =>
-    let params = recover val
-      [("name", "John Doe"); ("age", "30")]
-    end
+    let params =
+      recover val
+        [("name", "John Doe"); ("age", "30")]
+      end
     let result = FormEncoder(params)
     let expected: String val = "name=John+Doe&age=30"
     h.assert_eq[String val](expected, String.from_array(result))

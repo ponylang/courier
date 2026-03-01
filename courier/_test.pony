@@ -124,7 +124,7 @@ actor \nodoc\ Main is TestList
 
     // Request builder example-based tests
     test(_TestBuilderGetBasic)
-    test(_TestBuilderPostWithJsonBody)
+    test(_TestBuilderPostWithJSONBody)
     test(_TestBuilderPostWithFormBody)
     test(_TestBuilderQueryParams)
     test(_TestBuilderHeaders)
@@ -135,24 +135,26 @@ actor \nodoc\ Main is TestList
     test(_TestBuilderNoQueryParams)
 
     // Response JSON example-based tests
-    test(_TestResponseJsonValidObject)
-    test(_TestResponseJsonValidArray)
-    test(_TestResponseJsonInvalid)
-    test(_TestResponseJsonEmptyBody)
+    test(_TestResponseJSONValidObject)
+    test(_TestResponseJSONValidArray)
+    test(_TestResponseJSONInvalid)
+    test(_TestResponseJSONEmptyBody)
 
     // JSON decoder property-based tests
-    test(Property1UnitTest[String val](_PropertyDecodeJsonParseErrorPropagation))
-    test(Property1UnitTest[String val](_PropertyDecodeJsonDecodeErrorPropagation))
-    test(Property1UnitTest[String val](_PropertyDecodeJsonIdentityDecoder))
+    test(Property1UnitTest[String val](
+      _PropertyDecodeJSONParseErrorPropagation))
+    test(Property1UnitTest[String val](
+      _PropertyDecodeJSONDecodeErrorPropagation))
+    test(Property1UnitTest[String val](_PropertyDecodeJSONIdentityDecoder))
 
     // JSON decoder example-based tests
-    test(_TestJsonDecoderSuccessfulDecode)
-    test(_TestJsonDecoderMissingField)
-    test(_TestJsonDecoderWrongType)
-    test(_TestDecodeJsonValidJson)
-    test(_TestDecodeJsonInvalidJson)
-    test(_TestDecodeJsonWrongStructure)
-    test(_TestJsonDecodeErrorString)
+    test(_TestJSONDecoderSuccessfulDecode)
+    test(_TestJSONDecoderMissingField)
+    test(_TestJSONDecoderWrongType)
+    test(_TestDecodeJSONValidJSON)
+    test(_TestDecodeJSONInvalidJSON)
+    test(_TestDecodeJSONWrongStructure)
+    test(_TestJSONDecodeErrorString)
 
     // Multipart property-based tests
     test(Property1UnitTest[USize](_PropertyMultipartBodyStructure))

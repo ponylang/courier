@@ -5,7 +5,9 @@ use lori = "lori"
 use ssl = "ssl/net"
 
 class val Todo
-  """A todo item from jsonplaceholder.typicode.com."""
+  """
+  A todo item from jsonplaceholder.typicode.com.
+  """
   let title: String
   let completed: Bool
 
@@ -13,14 +15,16 @@ class val Todo
     title = title'
     completed = completed'
 
-primitive TodoDecoder is JsonDecoder[Todo]
-  """Decode a JSON object into a `Todo`."""
-  fun apply(value: json.JsonValue): (Todo | JsonDecodeError) =>
+primitive TodoDecoder is JSONDecoder[Todo]
+  """
+  Decode a JSON object into a `Todo`.
+  """
+  fun apply(value: json.JsonValue): (Todo | JSONDecodeError) =>
     let nav = json.JsonNav(value)
     try
       Todo(nav("title").as_string()?, nav("completed").as_bool()?)
     else
-      JsonDecodeError(
+      JSONDecodeError(
         "expected object with string 'title' and boolean 'completed'")
     end
 
@@ -28,19 +32,21 @@ actor Main
   new create(env: Env) =>
     let auth = lori.TCPConnectAuth(env.root)
     try
-      let ssl_ctx = recover val
-        let ctx = ssl.SSLContext
-        ctx.set_client_verify(true)
-        ctx.set_authority(
-          FilePath(FileAuth(env.root), "/etc/ssl/certs/ca-certificates.crt"))?
-        ctx
-      end
-      JsonApiClient(auth, ssl_ctx, env.out)
+      let ssl_ctx =
+        recover val
+          ssl.SSLContext
+            .> set_client_verify(true)
+            .> set_authority(
+              FilePath(
+                FileAuth(env.root),
+                "/etc/ssl/certs/ca-certificates.crt"))?
+        end
+      JSONAPIClient(auth, ssl_ctx, env.out)
     else
       env.out.print("Failed to initialize SSL context")
     end
 
-actor JsonApiClient is HTTPClientConnectionActor
+actor JSONAPIClient is HTTPClientConnectionActor
   """
   JSON API client that fetches a JSON endpoint over HTTPS and parses it.
 
@@ -50,7 +56,7 @@ actor JsonApiClient is HTTPClientConnectionActor
   fields.
 
   Demonstrates `Request` builder for request construction, `ResponseCollector`
-  for body accumulation, `JsonDecoder` and `DecodeJson` for typed JSON
+  for body accumulation, `JSONDecoder` and `DecodeJSON` for typed JSON
   decoding, and `HTTPClientConnection.ssl()` for TLS connections.
   """
   var _http: HTTPClientConnection = HTTPClientConnection.none()
@@ -63,8 +69,14 @@ actor JsonApiClient is HTTPClientConnectionActor
     out: OutStream)
   =>
     _out = out
-    _http = HTTPClientConnection.ssl(auth, ssl_ctx,
-      "jsonplaceholder.typicode.com", "443", this, ClientConnectionConfig)
+    _http =
+      HTTPClientConnection.ssl(
+        auth,
+        ssl_ctx,
+        "jsonplaceholder.typicode.com",
+        "443",
+        this,
+        ClientConnectionConfig)
 
   fun ref _http_client_connection(): HTTPClientConnection => _http
 
@@ -88,14 +100,14 @@ actor JsonApiClient is HTTPClientConnectionActor
   fun ref on_response_complete() =>
     try
       let response = _collector.build()?
-      match DecodeJson[Todo](response, TodoDecoder)
+      match DecodeJSON[Todo](response, TodoDecoder)
       | let todo: Todo =>
         _out.print("Todo item:")
         _out.print("  title: " + todo.title)
         _out.print("  completed: " + todo.completed.string())
       | let err: json.JsonParseError =>
         _out.print("JSON parse error: " + err.string())
-      | let err: JsonDecodeError =>
+      | let err: JSONDecodeError =>
         _out.print("JSON decode error: " + err.string())
       end
     end

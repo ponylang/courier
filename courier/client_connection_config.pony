@@ -1,7 +1,9 @@
 use lori = "lori"
 
 primitive _DefaultIdleTimeout
-  """60-second idle timeout, the default for HTTP client connections."""
+  """
+  60-second idle timeout, the default for HTTP client connections.
+  """
   fun apply(): (lori.IdleTimeout | None) =>
     match lori.MakeIdleTimeout(60_000)
     | let t: lori.IdleTimeout => t
@@ -66,7 +68,9 @@ class val ClientConnectionConfig
     from = from'
 
   fun _parser_config(): _ParserConfig val =>
-    """Create a parser config from the parser limit fields."""
+    """
+    Create a parser config from the parser limit fields.
+    """
     _ParserConfig(
       max_status_line_size,
       max_header_size,

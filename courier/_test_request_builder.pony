@@ -17,15 +17,16 @@ class \nodoc\ iso _PropertyBuilderMethodCorrect
       ["GET"; "HEAD"; "POST"; "PUT"; "DELETE"; "OPTIONS"; "PATCH"])
 
   fun ref property(arg1: String val, ph: PropertyHelper) =>
-    let req = match arg1
-    | "GET" => Request.get("/").build()
-    | "HEAD" => Request.head("/").build()
-    | "POST" => Request.post("/").build()
-    | "PUT" => Request.put("/").build()
-    | "DELETE" => Request.delete("/").build()
-    | "OPTIONS" => Request.options("/").build()
-    | "PATCH" => Request.patch("/").build()
-    else
+    let req =
+      match arg1
+      | "GET" => Request.get("/").build()
+      | "HEAD" => Request.head("/").build()
+      | "POST" => Request.post("/").build()
+      | "PUT" => Request.put("/").build()
+      | "DELETE" => Request.delete("/").build()
+      | "OPTIONS" => Request.options("/").build()
+      | "PATCH" => Request.patch("/").build()
+      else
       ph.fail("unknown method: " + arg1)
       return
     end
@@ -34,7 +35,6 @@ class \nodoc\ iso _PropertyBuilderMethodCorrect
 // ---------------------------------------------------------------------------
 // Example-based tests
 // ---------------------------------------------------------------------------
-
 class \nodoc\ iso _TestBuilderGetBasic is UnitTest
   """Simple GET produces correct method and path."""
   fun name(): String => "request_builder/get_basic"
@@ -45,7 +45,7 @@ class \nodoc\ iso _TestBuilderGetBasic is UnitTest
     h.assert_eq[String val]("/users", req.path)
     h.assert_true(req.body is None, "GET should have no body")
 
-class \nodoc\ iso _TestBuilderPostWithJsonBody is UnitTest
+class \nodoc\ iso _TestBuilderPostWithJSONBody is UnitTest
   """POST with json_body sets body and Content-Type."""
   fun name(): String => "request_builder/post_json_body"
 
@@ -130,10 +130,11 @@ class \nodoc\ iso _TestBuilderBasicAuth is UnitTest
     let req = Request.get("/")
       .basic_auth("user", "pass")
       .build()
-    let auth_value = match req.headers.get("authorization")
-    | let v: String val => v
-    else ""
-    end
+    let auth_value =
+      match req.headers.get("authorization")
+      | let v: String val => v
+      else ""
+      end
     h.assert_true(
       auth_value.contains("Basic "),
       "should have Basic auth header")
@@ -154,7 +155,10 @@ class \nodoc\ iso _TestBuilderBearerAuth is UnitTest
       end)
 
 class \nodoc\ iso _TestBuilderBodyNarrows is UnitTest
-  """After setting body, build() still works (type narrows to RequestOptions)."""
+  """
+  After setting body, build() still works
+  (type narrows to RequestOptions).
+  """
   fun name(): String => "request_builder/body_narrows"
 
   fun apply(h: TestHelper) =>

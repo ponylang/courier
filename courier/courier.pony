@@ -56,7 +56,8 @@ For HTTPS, use `HTTPClientConnection.ssl()` instead of
 - `Response` — parsed response metadata (version, status, reason, headers)
 - `ClientConnectionConfig` — parser limits, idle timeout, bind address
 - `SendRequestResult` — result of `send_request()` (success or error)
-- `HTTPResponse` — buffered response with complete body (from `ResponseCollector`)
+- `HTTPResponse` — buffered response with complete body
+  (from `ResponseCollector`)
 - `ResponseCollector` — accumulates streaming callbacks into `HTTPResponse`
 - `QueryParams` — RFC 3986 query string encoding
 - `FormEncoder` — `application/x-www-form-urlencoded` body encoding
@@ -73,10 +74,10 @@ For HTTPS, use `HTTPClientConnection.ssl()` instead of
 - `ParsedURL` — parsed URL with scheme, host, port, path, and optional query
 - `Scheme` — URL scheme (`SchemeHTTP` or `SchemeHTTPS`)
 - `URLParseError` — error encountered during URL parsing
-- `ResponseJson` — parse `HTTPResponse` body as JSON via json-ng
-- `JsonDecoder` — interface for typed JSON decoders
-- `JsonDecodeError` — decode failure with descriptive message
-- `DecodeJson` — parse and decode an HTTP response body in one step
+- `ResponseJSON` — parse `HTTPResponse` body as JSON via json-ng
+- `JSONDecoder` — interface for typed JSON decoders
+- `JSONDecodeError` — decode failure with descriptive message
+- `DecodeJSON` — parse and decode an HTTP response body in one step
 
 ## Design
 

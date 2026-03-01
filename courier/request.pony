@@ -48,29 +48,43 @@ primitive Request
   """
 
   fun get(path: String): RequestOptions ref^ =>
-    """Create a GET request builder."""
+    """
+    Create a GET request builder.
+    """
     _RequestBuilder(GET, path)
 
   fun head(path: String): RequestOptions ref^ =>
-    """Create a HEAD request builder."""
+    """
+    Create a HEAD request builder.
+    """
     _RequestBuilder(HEAD, path)
 
   fun delete(path: String): RequestOptionsWithBody ref^ =>
-    """Create a DELETE request builder."""
+    """
+    Create a DELETE request builder.
+    """
     _RequestBuilder(DELETE, path)
 
   fun options(path: String): RequestOptionsWithBody ref^ =>
-    """Create an OPTIONS request builder."""
+    """
+    Create an OPTIONS request builder.
+    """
     _RequestBuilder(OPTIONS, path)
 
   fun post(path: String): RequestOptionsWithBody ref^ =>
-    """Create a POST request builder."""
+    """
+    Create a POST request builder.
+    """
     _RequestBuilder(POST, path)
 
   fun put(path: String): RequestOptionsWithBody ref^ =>
-    """Create a PUT request builder."""
+    """
+    Create a PUT request builder.
+    """
     _RequestBuilder(PUT, path)
 
   fun patch(path: String): RequestOptionsWithBody ref^ =>
-    """Create a PATCH request builder."""
+    """
+    Create a PATCH request builder.
+    """
     _RequestBuilder(PATCH, path)

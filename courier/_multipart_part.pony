@@ -1,5 +1,7 @@
 class val _MultipartField
-  """A text field in a multipart form."""
+  """
+  A text field in a multipart form.
+  """
   let name: String
   let value: String
 
@@ -8,7 +10,9 @@ class val _MultipartField
     value = value'
 
 class val _MultipartFile
-  """A file attachment in a multipart form."""
+  """
+  A file attachment in a multipart form.
+  """
   let name: String
   let filename: String
   let content_type: String

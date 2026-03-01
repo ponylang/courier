@@ -21,7 +21,9 @@ class val HTTPRequest
     headers': Headers val = recover val Headers end,
     body': (Array[U8] val | None) = None)
   =>
-    """Create an HTTP request with the given method, path, headers, and body."""
+    """
+    Create an HTTP request with the given method, path, headers, and body.
+    """
     method = method'
     path = path'
     headers = headers'

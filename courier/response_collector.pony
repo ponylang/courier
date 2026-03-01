@@ -35,7 +35,9 @@ class ref ResponseCollector
   var _total_size: USize
 
   new create() =>
-    """Create an empty response collector."""
+    """
+    Create an empty response collector.
+    """
     _response = None
     _chunks = Array[Array[U8] val]
     _total_size = 0

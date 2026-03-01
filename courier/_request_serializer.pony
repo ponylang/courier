@@ -19,18 +19,18 @@ primitive _RequestSerializer
     let buf = recover iso Array[U8] end
 
     // Request line: METHOD SP PATH SP HTTP/1.1\r\n
-    buf.>append(request.method.string())
-      .>push(' ')
-      .>append(request.path)
-      .>append(" HTTP/1.1\r\n")
+    buf .> append(request.method.string())
+      .> push(' ')
+      .> append(request.path)
+      .> append(" HTTP/1.1\r\n")
 
     // Host header (auto-set if not present)
     if request.headers.get("host") is None then
       buf.append("Host: ")
       buf.append(host)
       if (port != "80") and (port != "443") and (port != "") then
-        buf.>push(':')
-          .>append(port)
+        buf .> push(':')
+          .> append(port)
       end
       buf.append("\r\n")
     end
@@ -39,18 +39,18 @@ primitive _RequestSerializer
     match request.body
     | let b: Array[U8] val =>
       if request.headers.get("content-length") is None then
-        buf.>append("Content-Length: ")
-          .>append(b.size().string())
-          .>append("\r\n")
+        buf .> append("Content-Length: ")
+          .> append(b.size().string())
+          .> append("\r\n")
       end
     end
 
     // User headers
     for (name, value) in request.headers.values() do
-      buf.>append(name)
-        .>append(": ")
-        .>append(value)
-        .>append("\r\n")
+      buf .> append(name)
+        .> append(": ")
+        .> append(value)
+        .> append("\r\n")
     end
 
     // End of headers

@@ -14,20 +14,30 @@ interface ref RequestOptionsWithBody
 
   fun ref header(hdr_name: String, hdr_value: String):
     RequestOptionsWithBody ref
-    """Add a header to the request."""
+    """
+    Add a header to the request.
+    """
 
   fun ref query(key: String, value: String): RequestOptionsWithBody ref
-    """Add a query parameter. Parameters are percent-encoded in `build()`."""
+    """
+    Add a query parameter. Parameters are percent-encoded in `build()`.
+    """
 
   fun ref basic_auth(username: String, password: String):
     RequestOptionsWithBody ref
-    """Set the Authorization header using HTTP Basic authentication."""
+    """
+    Set the Authorization header using HTTP Basic authentication.
+    """
 
   fun ref bearer_auth(token: String): RequestOptionsWithBody ref
-    """Set the Authorization header using a Bearer token."""
+    """
+    Set the Authorization header using a Bearer token.
+    """
 
   fun ref body(data: Array[U8] val): RequestOptions ref
-    """Set the request body as raw bytes."""
+    """
+    Set the request body as raw bytes.
+    """
 
   fun ref json_body(data: String): RequestOptions ref
     """
@@ -46,6 +56,7 @@ interface ref RequestOptionsWithBody
 
     Sets `Content-Type` to `multipart/form-data` with the boundary.
     """
-
   fun ref build(): HTTPRequest val
-    """Build the final `HTTPRequest val`."""
+    """
+    Build the final `HTTPRequest val`.
+    """
