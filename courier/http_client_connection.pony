@@ -193,9 +193,15 @@ class HTTPClientConnection is
 
   fun ref _on_connection_failure(reason: lori.ConnectionFailureReason) =>
     _state = _Closed
+    let courier_reason: ConnectionFailureReason =
+      match \exhaustive\ reason
+      | lori.ConnectionFailedDNS => ConnectionFailedDNS
+      | lori.ConnectionFailedTCP => ConnectionFailedTCP
+      | lori.ConnectionFailedSSL => ConnectionFailedSSL
+      end
     match _lifecycle_event_receiver
     | let r: HTTPClientLifecycleEventReceiver ref =>
-      r.on_connection_failure(reason)
+      r.on_connection_failure(courier_reason)
     end
 
   fun ref _on_received(data: Array[U8] iso) =>
