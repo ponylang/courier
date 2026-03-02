@@ -163,6 +163,22 @@ class HTTPClientConnection is
     """
     _close_connection()
 
+  fun ref yield_read() =>
+    """
+    Exit the read loop after the current callback, giving other actors a
+    chance to run. Reading resumes automatically on the next scheduler turn.
+
+    Intended for use inside `on_body_chunk()` to prevent a single large
+    response from starving other actors. Granularity is per-TCP-read, not
+    per-HTTP-chunk — one TCP read may contain multiple chunks, and they will
+    all be parsed before yielding. This is a one-shot flag; there is no
+    corresponding "unmute" needed.
+
+    No state guard is needed — if the connection is closed, the read loop
+    is not running and the flag is harmless.
+    """
+    _tcp_connection.yield_read()
+
   //
   // ClientLifecycleEventReceiver
   //

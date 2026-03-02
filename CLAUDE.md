@@ -103,6 +103,7 @@ Courier follows the same pattern as lori and stallion: protocol handler class ow
 - `_on_tls_ready`/`_on_tls_failure` inherited as no-ops — lori routes initial SSL through `_on_connected`/`_on_connection_failure`. Lori 0.9.0 added a `reason` parameter to `_on_tls_failure` but the inherited default no-op handles it transparently.
 - `QueryParams` returns `String` (for URL paths), `FormEncoder` returns `Array[U8] val` (for request body) — deliberate asymmetry matching their usage context
 - Request builder uses structural subtyping: `_RequestBuilder` satisfies both `RequestOptions` and `RequestOptionsWithBody` interfaces. Factory methods return the appropriate interface type to enforce compile-time body restriction.
+- `yield_read()` delegates directly to `_tcp_connection.yield_read()` without a state guard — if the connection is closed, the read loop isn't running and the flag is harmless.
 
 ## Release Notes
 
