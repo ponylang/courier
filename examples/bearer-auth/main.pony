@@ -62,7 +62,7 @@ actor BearerAuthClient is HTTPClientConnectionActor
       .build()
     _http.send_request(req)
 
-  fun ref on_connection_failure() =>
+  fun ref on_connection_failure(reason: lori.ConnectionFailureReason) =>
     _out.print("Connection failed")
 
   fun ref on_response(response: Response val) =>

@@ -1,3 +1,5 @@
+use lori = "lori"
+
 trait ref HTTPClientLifecycleEventReceiver
   """
   HTTP response lifecycle callbacks delivered to the client actor.
@@ -21,13 +23,12 @@ trait ref HTTPClientLifecycleEventReceiver
     """
     None
 
-  fun ref on_connection_failure() =>
+  fun ref on_connection_failure(reason: lori.ConnectionFailureReason) =>
     """
     Called when a connection attempt fails.
 
-    Covers TCP connection failure and SSL handshake failure (for connections
-    created with `HTTPClientConnection.ssl()`). The connection is unusable
-    after this callback.
+    The `reason` indicates which stage failed: DNS resolution, TCP connect,
+    or SSL handshake. The connection is unusable after this callback.
     """
     None
 
@@ -74,7 +75,7 @@ trait ref HTTPClientLifecycleEventReceiver
 
     Fires on remote disconnect, local close, idle timeout, or any other
     reason. Not called if the connection fails before connecting (use
-    `on_connection_failure()` for that case).
+    `on_connection_failure` for that case).
     """
     None
 

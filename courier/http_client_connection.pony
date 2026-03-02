@@ -175,11 +175,11 @@ class HTTPClientConnection is
     | let r: HTTPClientLifecycleEventReceiver ref => r.on_connected()
     end
 
-  fun ref _on_connection_failure() =>
+  fun ref _on_connection_failure(reason: lori.ConnectionFailureReason) =>
     _state = _Closed
     match _lifecycle_event_receiver
     | let r: HTTPClientLifecycleEventReceiver ref =>
-      r.on_connection_failure()
+      r.on_connection_failure(reason)
     end
 
   fun ref _on_received(data: Array[U8] iso) =>
