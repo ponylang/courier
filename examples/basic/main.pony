@@ -37,8 +37,12 @@ actor BasicClient is HTTPClientConnectionActor
   fun ref on_connected() =>
     _http.send_request(Request.get("/").build())
 
-  fun ref on_connection_failure(reason: lori.ConnectionFailureReason) =>
-    _out.print("Connection failed")
+  fun ref on_connection_failure(reason: ConnectionFailureReason) =>
+    match \exhaustive\ reason
+    | ConnectionFailedDNS => _out.print("DNS resolution failed")
+    | ConnectionFailedTCP => _out.print("TCP connection failed")
+    | ConnectionFailedSSL => _out.print("SSL handshake failed")
+    end
 
   fun ref on_response(response: Response val) =>
     """

@@ -1,5 +1,3 @@
-use lori = "lori"
-
 trait ref HTTPClientLifecycleEventReceiver
   """
   HTTP response lifecycle callbacks delivered to the client actor.
@@ -23,7 +21,7 @@ trait ref HTTPClientLifecycleEventReceiver
     """
     None
 
-  fun ref on_connection_failure(reason: lori.ConnectionFailureReason) =>
+  fun ref on_connection_failure(reason: ConnectionFailureReason) =>
     """
     Called when a connection attempt fails.
 

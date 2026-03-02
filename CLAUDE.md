@@ -30,7 +30,8 @@ Courier follows the same pattern as lori and stallion: protocol handler class ow
 **Connection layer:**
 - `HTTPClientConnection` — protocol handler class, implements `lori.ClientLifecycleEventReceiver` and `_ResponseParserNotify`. Stored as a field in the user's actor.
 - `HTTPClientConnectionActor` — trait the user's actor implements (`lori.TCPConnectionActor & HTTPClientLifecycleEventReceiver`)
-- `HTTPClientLifecycleEventReceiver` — callback trait with default no-ops: `on_connected`, `on_connection_failure(reason)`, `on_response`, `on_body_chunk`, `on_response_complete`, `on_parse_error`, `on_closed`, `on_throttled`, `on_unthrottled`
+- `HTTPClientLifecycleEventReceiver` — callback trait with default no-ops: `on_connected`, `on_connection_failure(reason: ConnectionFailureReason)`, `on_response`, `on_body_chunk`, `on_response_complete`, `on_parse_error`, `on_closed`, `on_throttled`, `on_unthrottled`
+- `ConnectionFailureReason` — `(ConnectionFailedDNS | ConnectionFailedTCP | ConnectionFailedSSL)`, follows `ParseError` pattern (private `Stringable` interface + public primitives + union alias). `HTTPClientConnection` maps from `lori.ConnectionFailureReason` internally.
 - `ClientConnectionConfig` — parser size limits, idle timeout, local bind address
 - `_ConnectionState` — two-state trait (`_Active`/`_Closed`) routing lori events
 
@@ -100,6 +101,7 @@ Courier follows the same pattern as lori and stallion: protocol handler class ow
 - Only one request in flight at a time (`_Idle`/`_AwaitingResponse` state)
 - User-initiated close does NOT complete in-progress close-delimited responses
 - Remote close DOES complete close-delimited responses (natural end signal)
+- `ConnectionFailureReason` is courier's own type, decoupling the public API from lori internals. `HTTPClientConnection._on_connection_failure()` maps `lori.ConnectionFailureReason` to courier's `ConnectionFailureReason` before forwarding to the user's callback.
 - `_on_tls_ready`/`_on_tls_failure` inherited as no-ops — lori routes initial SSL through `_on_connected`/`_on_connection_failure`. Lori 0.9.0 added a `reason` parameter to `_on_tls_failure` but the inherited default no-op handles it transparently.
 - `QueryParams` returns `String` (for URL paths), `FormEncoder` returns `Array[U8] val` (for request body) — deliberate asymmetry matching their usage context
 - Request builder uses structural subtyping: `_RequestBuilder` satisfies both `RequestOptions` and `RequestOptionsWithBody` interfaces. Factory methods return the appropriate interface type to enforce compile-time body restriction.

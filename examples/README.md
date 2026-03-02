@@ -8,7 +8,7 @@ Parses `https://httpbin.org/get?source=courier` with `URL.parse()` and prints th
 
 ## [basic](basic/)
 
-Connects to `example.com:80`, sends an HTTP GET request for `/`, and prints the response status, headers, and body to stdout. Demonstrates the full lifecycle: `HTTPClientConnectionActor` implementation, `on_connected` to send the request, response callbacks for status/headers/body, and connection close after completion. Uses `ResponseCollector` to accumulate streaming body chunks into a single `HTTPResponse`. Start here if you're new to the library.
+Connects to `example.com:80`, sends an HTTP GET request for `/`, and prints the response status, headers, and body to stdout. Demonstrates the full lifecycle: `HTTPClientConnectionActor` implementation, `on_connected` to send the request, response callbacks for status/headers/body, exhaustive `ConnectionFailureReason` matching in `on_connection_failure`, and connection close after completion. Uses `ResponseCollector` to accumulate streaming body chunks into a single `HTTPResponse`. Start here if you're new to the library.
 
 ## [query-params](query-params/)
 
