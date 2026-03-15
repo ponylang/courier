@@ -56,7 +56,7 @@ class \nodoc\ iso _PropertyURLDefaultPort is Property1[_ValidURLParts]
 
   fun ref property(arg1: _ValidURLParts, ph: PropertyHelper) =>
     let url_str = arg1.to_url_string()
-    match URL.parse(url_str)
+    match \exhaustive\ URL.parse(url_str)
     | let parsed: ParsedURL =>
       let expected =
         if parsed.scheme is SchemeHTTP then "80" else "443" end
@@ -75,7 +75,7 @@ class \nodoc\ iso _PropertyURLRequestPathStartsWithSlash
 
   fun ref property(arg1: _ValidURLParts, ph: PropertyHelper) =>
     let url_str = arg1.to_url_string()
-    match URL.parse(url_str)
+    match \exhaustive\ URL.parse(url_str)
     | let parsed: ParsedURL =>
       let rp = parsed.request_path()
       ph.assert_true(

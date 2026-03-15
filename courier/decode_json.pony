@@ -42,7 +42,7 @@ primitive DecodeJSON[A: Any val]
     the JSON doesn't match the decoder's expected structure, or the decoded
     value on success.
     """
-    match ResponseJSON(response)
+    match \exhaustive\ ResponseJSON(response)
     | let value: json.JsonValue => decoder(value)
     | let err: json.JsonParseError => err
     end
