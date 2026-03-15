@@ -16,7 +16,6 @@ The `ssl` option is required because this library depends on the `ssl` package v
 
 - [lori](https://github.com/ponylang/lori) 0.11.0 — TCP I/O with connection-actor model
 - [ssl](https://github.com/ponylang/ssl) 2.0.0 — SSL/TLS support
-- [json-ng](https://github.com/ponylang/json-ng) 0.3.0 — JSON parsing (for `ResponseJSON`)
 
 ## Package
 

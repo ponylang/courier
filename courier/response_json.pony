@@ -2,11 +2,11 @@ use json = "json"
 
 primitive ResponseJSON
   """
-  Parse the body of an `HTTPResponse` as JSON using json-ng.
+  Parse the body of an `HTTPResponse` as JSON.
 
   Returns the parsed `JsonValue` on success, or `JsonParseError` if the body
   is not valid JSON. This is deliberately minimal — users then use
-  `JsonNav`, `JsonLens`, pattern matching, or whatever json-ng access pattern
+  `JsonNav`, `JsonLens`, pattern matching, or whatever access pattern
   they prefer.
 
   ```pony
