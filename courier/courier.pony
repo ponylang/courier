@@ -76,7 +76,7 @@ For HTTPS, use `HTTPClientConnection.ssl()` instead of
 - `ParsedURL` — parsed URL with scheme, host, port, path, and optional query
 - `Scheme` — URL scheme (`SchemeHTTP` or `SchemeHTTPS`)
 - `URLParseError` — error encountered during URL parsing
-- `ResponseJSON` — parse `HTTPResponse` body as JSON via json-ng
+- `ResponseJSON` — parse `HTTPResponse` body as JSON
 - `JSONDecoder` — interface for typed JSON decoders
 - `JSONDecodeError` — decode failure with descriptive message
 - `DecodeJSON` — parse and decode an HTTP response body in one step
