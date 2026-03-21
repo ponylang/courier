@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Changed
 
+- Update ponylang/ssl to 2.0.1 ([PR #38](https://github.com/ponylang/courier/pull/38))
 
 ## [0.1.1] - 2026-03-15
 
