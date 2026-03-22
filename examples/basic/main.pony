@@ -42,6 +42,7 @@ actor BasicClient is HTTPClientConnectionActor
     | ConnectionFailedDNS => _out.print("DNS resolution failed")
     | ConnectionFailedTCP => _out.print("TCP connection failed")
     | ConnectionFailedSSL => _out.print("SSL handshake failed")
+    | ConnectionFailedTimeout => _out.print("Connection timed out")
     end
 
   fun ref on_response(response: Response val) =>

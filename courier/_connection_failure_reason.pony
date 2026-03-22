@@ -17,3 +17,9 @@ primitive ConnectionFailedSSL is _ConnectionFailureReason
   SSL handshake failed after TCP connection succeeded.
   """
   fun string(): String iso^ => "ConnectionFailedSSL".clone()
+
+primitive ConnectionFailedTimeout is _ConnectionFailureReason
+  """
+  Connection attempt timed out before completing.
+  """
+  fun string(): String iso^ => "ConnectionFailedTimeout".clone()
