@@ -83,7 +83,8 @@ class HTTPClientConnection is
         port,
         config.from,
         client_actor,
-        this)
+        this
+        where connection_timeout = config.connection_timeout)
 
   new ssl(
     auth: lori.TCPConnectAuth,
@@ -113,7 +114,8 @@ class HTTPClientConnection is
         port,
         config.from,
         client_actor,
-        this)
+        this
+        where connection_timeout = config.connection_timeout)
 
   fun ref _connection(): lori.TCPConnection =>
     """
@@ -198,6 +200,7 @@ class HTTPClientConnection is
       | lori.ConnectionFailedDNS => ConnectionFailedDNS
       | lori.ConnectionFailedTCP => ConnectionFailedTCP
       | lori.ConnectionFailedSSL => ConnectionFailedSSL
+      | lori.ConnectionFailedTimeout => ConnectionFailedTimeout
       end
     match _lifecycle_event_receiver
     | let r: HTTPClientLifecycleEventReceiver ref =>

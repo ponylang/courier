@@ -6,9 +6,12 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 
+- Fix SSL connection idle timeout issues ([PR #39](https://github.com/ponylang/courier/pull/39))
+- Fix connection resource leak on early close ([PR #39](https://github.com/ponylang/courier/pull/39))
 
 ### Added
 
+- Add connection timeout support ([PR #39](https://github.com/ponylang/courier/pull/39))
 
 ### Changed
 

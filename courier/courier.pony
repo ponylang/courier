@@ -54,10 +54,12 @@ For HTTPS, use `HTTPClientConnection.ssl()` instead of
 - `HTTPClientLifecycleEventReceiver` — callback trait (default no-ops)
 - `HTTPRequest` — request data (method, path, headers, body)
 - `Response` — parsed response metadata (version, status, reason, headers)
-- `ClientConnectionConfig` — parser limits, idle timeout, bind address
+- `ClientConnectionConfig` — parser limits, idle timeout, connection timeout,
+  bind address
 - `SendRequestResult` — result of `send_request()` (success or error)
 - `ConnectionFailureReason` — reason a connection attempt failed
-  (`ConnectionFailedDNS`, `ConnectionFailedTCP`, `ConnectionFailedSSL`)
+  (`ConnectionFailedDNS`, `ConnectionFailedTCP`, `ConnectionFailedSSL`,
+  `ConnectionFailedTimeout`)
 - `HTTPResponse` — buffered response with complete body
   (from `ResponseCollector`)
 - `ResponseCollector` — accumulates streaming callbacks into `HTTPResponse`

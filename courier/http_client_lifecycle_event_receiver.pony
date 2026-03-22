@@ -26,7 +26,8 @@ trait ref HTTPClientLifecycleEventReceiver
     Called when a connection attempt fails.
 
     The `reason` indicates which stage failed: DNS resolution, TCP connect,
-    or SSL handshake. The connection is unusable after this callback.
+    SSL handshake, or connection timeout. The connection is unusable after
+    this callback.
     """
     None
 
