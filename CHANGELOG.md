@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 
+- Expose one-shot timer API ([PR #42](https://github.com/ponylang/courier/pull/42))
 
 ### Changed
 
