@@ -1,3 +1,5 @@
+use lori = "lori"
+
 trait ref _ConnectionState
   """
   Connection lifecycle state.
@@ -33,6 +35,11 @@ trait ref _ConnectionState
     Handle connection going idle.
     """
 
+  fun ref on_timer(client: HTTPClientConnection ref, token: lori.TimerToken)
+    """
+    Handle one-shot timer firing.
+    """
+
 class ref _Active is _ConnectionState
   """
   Connection is active — sending requests and receiving responses.
@@ -53,6 +60,9 @@ class ref _Active is _ConnectionState
   fun ref on_idle_timeout(client: HTTPClientConnection ref) =>
     client._handle_idle_timeout()
 
+  fun ref on_timer(client: HTTPClientConnection ref, token: lori.TimerToken) =>
+    client._handle_timer(token)
+
 class ref _Closed is _ConnectionState
   """
   Connection is closed — all operations are no-ops.
@@ -71,4 +81,7 @@ class ref _Closed is _ConnectionState
     None
 
   fun ref on_idle_timeout(client: HTTPClientConnection ref) =>
+    None
+
+  fun ref on_timer(client: HTTPClientConnection ref, token: lori.TimerToken) =>
     None

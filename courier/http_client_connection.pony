@@ -181,6 +181,38 @@ class HTTPClientConnection is
     """
     _tcp_connection.yield_read()
 
+  fun ref set_timer(duration: lori.TimerDuration)
+    : (lori.TimerToken | lori.SetTimerError)
+  =>
+    """
+    Create a one-shot timer that fires `on_timer()` after the configured
+    duration. Returns a `TimerToken` on success, or a `SetTimerError` on
+    failure.
+
+    Unlike idle timeout, this timer has no I/O-reset behavior — it fires
+    unconditionally after the duration elapses, regardless of send/receive
+    activity. There is no automatic re-arming; call `set_timer()` again from
+    `on_timer()` for repetition.
+
+    Only one timer can be active at a time. Setting a timer while one is
+    already active returns `SetTimerAlreadyActive` — call `cancel_timer()`
+    first. Requires the connection to be open; returns `SetTimerNotOpen` if
+    not.
+
+    Use `lori.MakeTimerDuration(milliseconds)` to create the duration value.
+    `MakeTimerDuration` returns `(TimerDuration | ValidationFailure)`, so
+    match on the result before passing it here.
+    """
+    _tcp_connection.set_timer(duration)
+
+  fun ref cancel_timer(token: lori.TimerToken) =>
+    """
+    Cancel an active timer. No-op if the token doesn't match the active timer
+    (already fired, already cancelled, wrong token). Safe to call with stale
+    tokens.
+    """
+    _tcp_connection.cancel_timer(token)
+
   //
   // ClientLifecycleEventReceiver
   //
@@ -221,6 +253,9 @@ class HTTPClientConnection is
 
   fun ref _on_idle_timeout() =>
     _state.on_idle_timeout(this)
+
+  fun ref _on_timer(token: lori.TimerToken) =>
+    _state.on_timer(this, token)
 
   //
   // _ResponseParserNotify — forwarding parser events to receiver
@@ -307,6 +342,15 @@ class HTTPClientConnection is
     Close the connection on idle timeout.
     """
     _close_connection()
+
+  fun ref _handle_timer(token: lori.TimerToken) =>
+    """
+    Forward one-shot timer firing to the receiver.
+    """
+    match \exhaustive\ _lifecycle_event_receiver
+    | let r: HTTPClientLifecycleEventReceiver ref => r.on_timer(token)
+    | None => _Unreachable()
+    end
 
   fun ref _close_connection() =>
     """
