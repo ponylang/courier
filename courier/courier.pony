@@ -47,6 +47,53 @@ actor MyClient is HTTPClientConnectionActor
 For HTTPS, use `HTTPClientConnection.ssl()` instead of
 `HTTPClientConnection()`.
 
+## One-Shot Timers
+
+For response deadlines or application-level timeouts, use
+`HTTPClientConnection.set_timer()`. Unlike idle timeout, this timer fires
+unconditionally — I/O activity does not reset it. Only one timer can be active
+per connection at a time. The typical pattern is a response deadline: set a timer
+after sending a request, cancel it when the response completes, close the
+connection if the timer fires:
+
+```pony
+actor MyClient is HTTPClientConnectionActor
+  var _http: HTTPClientConnection = HTTPClientConnection.none()
+  var _timer: (lori.TimerToken | None) = None
+  let _out: OutStream
+
+  // ... constructor ...
+
+  fun ref _http_client_connection(): HTTPClientConnection => _http
+
+  fun ref on_connected() =>
+    _http.send_request(Request.get("/slow-endpoint").build())
+    match lori.MakeTimerDuration(5_000)
+    | let d: lori.TimerDuration =>
+      match _http.set_timer(d)
+      | let t: lori.TimerToken => _timer = t
+      | let err: lori.SetTimerError => None
+      end
+    end
+
+  fun ref on_response_complete() =>
+    match _timer
+    | let t: lori.TimerToken =>
+      _http.cancel_timer(t)
+      _timer = None
+    end
+    // process response...
+    _http.close()
+
+  fun ref on_timer(token: lori.TimerToken) =>
+    match _timer
+    | let t: lori.TimerToken if t == token =>
+      _timer = None
+      _out.print("Response timed out")
+      _http.close()
+    end
+```
+
 ## Key Types
 
 - `HTTPClientConnectionActor` — trait for your actor
@@ -60,6 +107,11 @@ For HTTPS, use `HTTPClientConnection.ssl()` instead of
 - `ConnectionFailureReason` — reason a connection attempt failed
   (`ConnectionFailedDNS`, `ConnectionFailedTCP`, `ConnectionFailedSSL`,
   `ConnectionFailedTimeout`)
+- `lori.TimerToken` — opaque token for timer cancellation and matching
+- `lori.TimerDuration` — validated timer duration (use
+  `lori.MakeTimerDuration(milliseconds)` to create)
+- `lori.SetTimerError` — timer setup failure (`lori.SetTimerAlreadyActive`,
+  `lori.SetTimerNotOpen`)
 - `HTTPResponse` — buffered response with complete body
   (from `ResponseCollector`)
 - `ResponseCollector` — accumulates streaming callbacks into `HTTPResponse`

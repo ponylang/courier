@@ -1,3 +1,5 @@
+use lori = "lori"
+
 trait ref HTTPClientLifecycleEventReceiver
   """
   HTTP response lifecycle callbacks delivered to the client actor.
@@ -92,5 +94,21 @@ trait ref HTTPClientLifecycleEventReceiver
     Called when backpressure is released on the connection.
 
     The TCP send buffer has drained — request sending may resume.
+    """
+    None
+
+  fun ref on_timer(token: lori.TimerToken) =>
+    """
+    Called when a one-shot timer created by `HTTPClientConnection.set_timer()`
+    fires.
+
+    The `token` matches the one returned by `set_timer()`. Fires once per
+    `set_timer()` call. The timer is consumed before the callback, so it is
+    safe to call `set_timer()` from within `on_timer()` to re-arm. No
+    automatic re-arming occurs.
+
+    Unlike idle timeout, this timer has no I/O-reset behavior — it fires
+    unconditionally after the configured duration, regardless of send/receive
+    activity.
     """
     None
