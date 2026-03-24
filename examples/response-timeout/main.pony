@@ -61,7 +61,7 @@ actor ResponseTimeoutClient is HTTPClientConnectionActor
     | let d: lori.TimerDuration =>
       // set_timer returns a TimerToken on success, or a SetTimerError
       // if the connection isn't open or a timer is already active.
-      match _http.set_timer(d)
+      match \exhaustive\ _http.set_timer(d)
       | let t: lori.TimerToken =>
         _timer = t
       | lori.SetTimerAlreadyActive =>

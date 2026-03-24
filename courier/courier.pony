@@ -52,7 +52,8 @@ For HTTPS, use `HTTPClientConnection.ssl()` instead of
 For response deadlines or application-level timeouts, use
 `HTTPClientConnection.set_timer()`. Unlike idle timeout, this timer fires
 unconditionally — I/O activity does not reset it. Only one timer can be active
-per connection at a time. The typical pattern is a response deadline: set a timer
+per connection at a time. The typical pattern is a response deadline: set a
+timer
 after sending a request, cancel it when the response completes, close the
 connection if the timer fires:
 
