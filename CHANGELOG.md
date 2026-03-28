@@ -2,17 +2,11 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a CHANGELOG](http://keepachangelog.com/).
 
-## [unreleased] - unreleased
+## [0.1.4] - 2026-03-28
 
 ### Fixed
 
 - Fix crash when closing a connection before initialization completes ([PR #43](https://github.com/ponylang/courier/pull/43))
-
-### Added
-
-
-### Changed
-
 
 ## [0.1.3] - 2026-03-24
 
