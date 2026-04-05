@@ -56,6 +56,7 @@ interface ref RequestOptionsWithBody
 
     Sets `Content-Type` to `multipart/form-data` with the boundary.
     """
+
   fun ref build(): HTTPRequest val
     """
     Build the final `HTTPRequest val`.
