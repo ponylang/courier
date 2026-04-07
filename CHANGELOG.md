@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 
+- Update lori to 0.13.1 ([PR #47](https://github.com/ponylang/courier/pull/47))
 
 ### Added
 
