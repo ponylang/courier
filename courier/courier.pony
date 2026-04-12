@@ -107,7 +107,7 @@ actor MyClient is HTTPClientConnectionActor
 - `SendRequestResult` — result of `send_request()` (success or error)
 - `ConnectionFailureReason` — reason a connection attempt failed
   (`ConnectionFailedDNS`, `ConnectionFailedTCP`, `ConnectionFailedSSL`,
-  `ConnectionFailedTimeout`)
+  `ConnectionFailedTimeout`, `ConnectionFailedTimerError`)
 - `lori.TimerToken` — opaque token for timer cancellation and matching
 - `lori.TimerDuration` — validated timer duration (use
   `lori.MakeTimerDuration(milliseconds)` to create)

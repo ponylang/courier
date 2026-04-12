@@ -6,12 +6,15 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 
+- Fix potential connection hang when timer event subscription fails ([PR #48](https://github.com/ponylang/courier/pull/48))
 
 ### Added
 
 
 ### Changed
 
+- Add ConnectionFailedTimerError to ConnectionFailureReason ([PR #48](https://github.com/ponylang/courier/pull/48))
+- Require ponyc 0.63.1 or later ([PR #48](https://github.com/ponylang/courier/pull/48))
 
 ## [0.1.5] - 2026-04-07
 
