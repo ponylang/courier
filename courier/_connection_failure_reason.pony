@@ -23,3 +23,9 @@ primitive ConnectionFailedTimeout is _ConnectionFailureReason
   Connection attempt timed out before completing.
   """
   fun string(): String iso^ => "ConnectionFailedTimeout".clone()
+
+primitive ConnectionFailedTimerError is _ConnectionFailureReason
+  """
+  Connect timer ASIO event subscription failed.
+  """
+  fun string(): String iso^ => "ConnectionFailedTimerError".clone()

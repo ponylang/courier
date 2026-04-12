@@ -233,6 +233,7 @@ class HTTPClientConnection is
       | lori.ConnectionFailedTCP => ConnectionFailedTCP
       | lori.ConnectionFailedSSL => ConnectionFailedSSL
       | lori.ConnectionFailedTimeout => ConnectionFailedTimeout
+      | lori.ConnectionFailedTimerError => ConnectionFailedTimerError
       end
     match _lifecycle_event_receiver
     | let r: HTTPClientLifecycleEventReceiver ref =>
