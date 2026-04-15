@@ -202,6 +202,11 @@ class HTTPClientConnection is
     Use `lori.MakeTimerDuration(milliseconds)` to create the duration value.
     `MakeTimerDuration` returns `(TimerDuration | ValidationFailure)`, so
     match on the result before passing it here.
+
+    Arming the timer can also fail asynchronously if the runtime cannot
+    register the underlying ASIO event (e.g. `ENOMEM` from `kevent` or
+    `epoll_ctl`). In that case `on_timer_failure()` is delivered instead of
+    `on_timer()`.
     """
     _tcp_connection.set_timer(duration)
 
@@ -255,8 +260,14 @@ class HTTPClientConnection is
   fun ref _on_idle_timeout() =>
     _state.on_idle_timeout(this)
 
+  fun ref _on_idle_timer_failure() =>
+    _state.on_idle_timer_failure(this)
+
   fun ref _on_timer(token: lori.TimerToken) =>
     _state.on_timer(this, token)
+
+  fun ref _on_timer_failure() =>
+    _state.on_timer_failure(this)
 
   //
   // _ResponseParserNotify — forwarding parser events to receiver
@@ -344,12 +355,36 @@ class HTTPClientConnection is
     """
     _close_connection()
 
+  fun ref _handle_idle_timer_failure() =>
+    """
+    Re-arm the idle timer after an ASIO subscription failure.
+
+    The idle timer is a courier-internal concern — users configure it via
+    `ClientConnectionConfig.idle_timeout` but never interact with it
+    directly. A silent re-arm preserves idle protection without surfacing
+    a failure users have no way to act on.
+    """
+    match \exhaustive\ _config
+    | let c: ClientConnectionConfig =>
+      _tcp_connection.idle_timeout(c.idle_timeout)
+    | None => _Unreachable()
+    end
+
   fun ref _handle_timer(token: lori.TimerToken) =>
     """
     Forward one-shot timer firing to the receiver.
     """
     match \exhaustive\ _lifecycle_event_receiver
     | let r: HTTPClientLifecycleEventReceiver ref => r.on_timer(token)
+    | None => _Unreachable()
+    end
+
+  fun ref _handle_timer_failure() =>
+    """
+    Forward user timer ASIO subscription failure to the receiver.
+    """
+    match \exhaustive\ _lifecycle_event_receiver
+    | let r: HTTPClientLifecycleEventReceiver ref => r.on_timer_failure()
     | None => _Unreachable()
     end
 

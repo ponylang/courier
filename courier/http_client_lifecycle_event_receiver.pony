@@ -112,3 +112,25 @@ trait ref HTTPClientLifecycleEventReceiver
     activity.
     """
     None
+
+  fun ref on_timer_failure() =>
+    """
+    Called when a user timer's ASIO event subscription fails. This is
+    typically caused by the kernel returning an error (e.g. `ENOMEM`) from
+    `kevent` or `epoll_ctl` when the runtime tries to register the timer.
+
+    Before this callback fires, the timer has already been cancelled in the
+    connection. Any `TimerToken` you stored from the `set_timer()` call is
+    now stale and can be discarded. The connection itself is unaffected and
+    continues running. The application decides how to recover — for example,
+    call `set_timer()` again from within this callback to create a new timer,
+    or `close()` the connection. A re-armed timer can itself fail
+    asynchronously under sustained pressure; if the new subscription also
+    fails, `on_timer_failure()` fires again.
+
+    Fires only for timers created via `HTTPClientConnection.set_timer()`.
+    Idle-timeout timer subscription failures are handled internally — the
+    library re-arms the idle timer automatically — and do not surface
+    through this or any other callback.
+    """
+    None

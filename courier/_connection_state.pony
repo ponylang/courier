@@ -35,9 +35,19 @@ trait ref _ConnectionState
     Handle connection going idle.
     """
 
+  fun ref on_idle_timer_failure(client: HTTPClientConnection ref)
+    """
+    Handle idle timer ASIO subscription failure.
+    """
+
   fun ref on_timer(client: HTTPClientConnection ref, token: lori.TimerToken)
     """
     Handle one-shot timer firing.
+    """
+
+  fun ref on_timer_failure(client: HTTPClientConnection ref)
+    """
+    Handle user timer ASIO subscription failure.
     """
 
 class ref _Active is _ConnectionState
@@ -60,8 +70,14 @@ class ref _Active is _ConnectionState
   fun ref on_idle_timeout(client: HTTPClientConnection ref) =>
     client._handle_idle_timeout()
 
+  fun ref on_idle_timer_failure(client: HTTPClientConnection ref) =>
+    client._handle_idle_timer_failure()
+
   fun ref on_timer(client: HTTPClientConnection ref, token: lori.TimerToken) =>
     client._handle_timer(token)
+
+  fun ref on_timer_failure(client: HTTPClientConnection ref) =>
+    client._handle_timer_failure()
 
 class ref _Closed is _ConnectionState
   """
@@ -83,5 +99,11 @@ class ref _Closed is _ConnectionState
   fun ref on_idle_timeout(client: HTTPClientConnection ref) =>
     None
 
+  fun ref on_idle_timer_failure(client: HTTPClientConnection ref) =>
+    None
+
   fun ref on_timer(client: HTTPClientConnection ref, token: lori.TimerToken) =>
+    None
+
+  fun ref on_timer_failure(client: HTTPClientConnection ref) =>
     None
