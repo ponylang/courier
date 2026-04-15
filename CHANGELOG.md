@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 
+- Add on_timer_failure callback ([PR #49](https://github.com/ponylang/courier/pull/49))
 
 ### Changed
 
