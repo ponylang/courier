@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Changed
 
+- Require ponyc 0.64.0 or later ([PR #56](https://github.com/ponylang/courier/pull/56))
 
 ## [0.2.1] - 2026-04-15
 
