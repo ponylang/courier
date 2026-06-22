@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 
+- Fix response never arriving after sending a large request ([PR #59](https://github.com/ponylang/courier/pull/59))
 
 ### Added
 
