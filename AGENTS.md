@@ -36,7 +36,7 @@ The `ssl` option is required because this library depends on the `ssl` package v
 
 ## Dependencies
 
-- [lori](https://github.com/ponylang/lori) 0.15.0 — TCP I/O with connection-actor model
+- [lori](https://github.com/ponylang/lori) 0.15.1 — TCP I/O with connection-actor model
 - [ssl](https://github.com/ponylang/ssl) 2.0.1 — SSL/TLS support
 
 ## Package
