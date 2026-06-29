@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Changed
 
+- Drop support for Windows 10 ([PR #60](https://github.com/ponylang/courier/pull/60))
 
 ## [0.3.1] - 2026-06-22
 
