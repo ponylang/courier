@@ -8,7 +8,7 @@ courier is beta quality software that will change frequently. Expect breaking ch
 
 ## Installation
 
-* Requires ponyc 0.64.0 or later
+* Requires ponyc 0.64.0 or later. On Windows, requires ponyc 0.66.0 or later.
 * Install [corral](https://github.com/ponylang/corral)
 * `corral add github.com/ponylang/courier.git --version 0.3.1`
 * `corral fetch` to fetch your dependencies
