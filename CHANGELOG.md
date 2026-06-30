@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 
+- Fix connections closed mid-transfer by the idle timeout ([PR #62](https://github.com/ponylang/courier/pull/62))
 
 ### Added
 
