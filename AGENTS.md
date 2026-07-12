@@ -1,4 +1,6 @@
-# HTTP Client for Pony
+# Courier
+
+An HTTP/1.1 client library for Pony, built on lori.
 
 <!-- contributor-only -->
 ## Contributing with an AI assistant
@@ -22,38 +24,23 @@ When you start working on this project, load the `pony-skills` skill — it tell
 Read [CONTRIBUTING.md](CONTRIBUTING.md).
 <!-- /contributor-only -->
 
-## Building
+## Building and testing
 
 ```
-make ssl=3.0.x      # build and run tests (OpenSSL 3.x)
-make ssl=1.1.x      # build and run tests (OpenSSL 1.1.x)
+make ssl=3.0.x                      # build + run tests (OpenSSL 3.x)
+make ssl=1.1.x                      # OpenSSL 1.1.x
+make ssl=libressl                   # LibreSSL
 make test-one t=TestName ssl=3.0.x  # run a single test by name
-make ssl=libressl   # build and run tests (LibreSSL)
-make clean           # clean build artifacts
+make clean
 ```
 
-The `ssl` option is required because this library depends on the `ssl` package via lori.
-
-## Dependencies
-
-- [lori](https://github.com/ponylang/lori) 0.16.1 — TCP I/O with connection-actor model
-- [ssl](https://github.com/ponylang/ssl) 2.0.1 — SSL/TLS support
-
-## Package
-
-Package: `courier` (repo name is `courier`, Pony package name is `courier`)
+`ssl=` is required because courier depends on the `ssl` package; the Makefile passes the version to ponyc as a compile define and errors without it.
 
 ## Architecture
 
-Follows the lori/stallion pattern: protocol handler class (`HTTPClientConnection`) owned by the user's actor, with synchronous `fun ref` callbacks via `HTTPClientLifecycleEventReceiver`. Core protocol layer handles HTTP/1.1 parsing and serialization; convenience layer adds `ResponseCollector`, `Request` builder, URL parsing, encoding utilities, and JSON decoding.
+Like lori and stallion, the user's actor owns the connection: it holds an `HTTPClientConnection` and takes synchronous `fun ref` callbacks through `HTTPClientLifecycleEventReceiver`. A core layer does HTTP/1.1 parsing and serialization; a convenience layer adds response collection, a request builder, URL parsing, encoding, and JSON decoding.
 
-Key things that would trip you up without prior knowledge:
-- Only one request in flight at a time — `send_request()` returns `SendRequestResult` to signal this
-- `ConnectionFailureReason` is courier's own type, not lori's — mapped internally to decouple the public API
-- `QueryParams` returns `String` (for URL paths), `FormEncoder` returns `Array[U8] val` (for request body) — deliberate asymmetry
-- User-initiated close does NOT complete close-delimited responses; remote close does
-- `_on_tls_ready`/`_on_tls_failure` are inherited no-ops — lori routes SSL through `_on_connected`/`_on_connection_failure`
+Two things a cold agent won't infer from the code:
 
-## Release Notes
-
-Follow the standard ponylang release notes conventions. Create individual `.md` files in `.release-notes/` for each PR with user-facing changes.
+- Courier does not pipeline — only one request is in flight at a time.
+- `ConnectionFailureReason` is courier's own type, deliberately remapped from lori's so the public API doesn't leak lori's — which is why two identically-named primitive sets exist.
