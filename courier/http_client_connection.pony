@@ -42,6 +42,7 @@ class HTTPClientConnection is
   var _state: _ConnectionState = _Active
   var _request_state: (_Idle | _AwaitingResponse) = _Idle
   var _parser: (_ResponseParser | None) = None
+  var _yield_read: Bool = false
 
   new none() =>
     """
@@ -167,19 +168,16 @@ class HTTPClientConnection is
 
   fun ref yield_read() =>
     """
-    Exit the read loop after the current callback, giving other actors a
-    chance to run. Reading resumes automatically on the next scheduler turn.
+    Stop reading once the parser finishes the data it is working on, giving
+    other actors a chance to run. Reading resumes on the next scheduler turn;
+    there is nothing to call to resume it.
 
     Intended for use inside `on_body_chunk()` to prevent a single large
-    response from starving other actors. Granularity is per-TCP-read, not
-    per-HTTP-chunk — one TCP read may contain multiple chunks, and they will
-    all be parsed before yielding. This is a one-shot flag; there is no
-    corresponding "unmute" needed.
-
-    No state guard is needed — if the connection is closed, the read loop
-    is not running and the flag is harmless.
+    response from starving other actors. Expect more callbacks after this
+    call: every chunk left in the data being parsed fires `on_body_chunk()`
+    before reading stops.
     """
-    _tcp_connection.yield_read()
+    _yield_read = true
 
   fun ref set_timer(duration: lori.TimerDuration)
     : (lori.TimerToken | lori.SetTimerError)
@@ -245,8 +243,17 @@ class HTTPClientConnection is
       r.on_connection_failure(courier_reason)
     end
 
-  fun ref _on_received(data: Array[U8] iso) =>
+  fun ref _on_received(data: Array[U8] iso): lori.ReadAction =>
+    // `yield_read()` runs from a callback the parser fires while handling
+    // this data, so reading the flag first would apply the yield one
+    // message late.
     _state.on_received(this, consume data)
+    if _yield_read then
+      _yield_read = false
+      lori.YieldReading
+    else
+      lori.KeepReading
+    end
 
   fun ref _on_closed() =>
     _state.on_closed(this)
