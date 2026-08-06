@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file. This projec
 - Fix backpressure not stopping incoming data on an HTTPS connection ([PR #68](https://github.com/ponylang/courier/pull/68))
 - Fix yield_read() not taking effect on an HTTPS connection ([PR #68](https://github.com/ponylang/courier/pull/68))
 - Fix a hang when writing to a socket under load ([PR #68](https://github.com/ponylang/courier/pull/68))
+- Fix additional SSL connection bugs ([PR #75](https://github.com/ponylang/courier/pull/75))
+- Fix a macOS bug where setting up a connection could close an unrelated file descriptor ([PR #75](https://github.com/ponylang/courier/pull/75))
 
 
 ### Added
@@ -20,7 +22,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Changed
 
 - Require ponyc 0.67.0 or later ([PR #68](https://github.com/ponylang/courier/pull/68))
-- Move to ponylang/ssl 3.0.0 ([PR #68](https://github.com/ponylang/courier/pull/68))
+- Move to ponylang/ssl 4.0.0 ([PR #68](https://github.com/ponylang/courier/pull/68))
 
 
 ## [0.4.0] - 2026-06-30
