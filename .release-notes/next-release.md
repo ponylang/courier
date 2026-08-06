@@ -22,9 +22,9 @@ Under write load, sending on a connection could hang the whole program. When the
 
 courier now requires ponyc 0.67.0 or later on every platform. The previous minimum was 0.64.0, and 0.66.0 on Windows; 0.64.0 through 0.66.x are no longer supported. The write hang under load is closed by a socket call that ponyc added in 0.67.0.
 
-## Move to ponylang/ssl 3.0.0
+## Move to ponylang/ssl 4.0.0
 
-courier now depends on ponylang/ssl 3.0.0, where it depended on 2.0.1. If your application does not declare ssl itself, it picks up 3.0.0 through courier, and your own `use "ssl/net"` or `use "ssl/crypto"` code is built against it. If your application does declare ssl, your declaration is the one that applies.
+courier now depends on ponylang/ssl 4.0.0, where it depended on 2.0.1. If your application does not declare ssl itself, it picks up 4.0.0 through courier, and your own `use "ssl/net"` or `use "ssl/crypto"` code is built against it. If your application does declare ssl, your declaration is the one that applies.
 
 courier's own API is unchanged — an HTTPS connection still takes an `SSLContext val`. What can break is your own ssl code. The one you are most likely to hit is the rename of the protocol-version primitives, which now spell their acronyms in full, because setting a minimum TLS version on the context you hand courier is ordinary practice:
 
@@ -36,4 +36,12 @@ ctx.set_min_proto_version(Tls1u2Version())?
 ctx.set_min_proto_version(TLS1u2Version())?
 ```
 
-All twelve protocol-version primitives were renamed the same way. ponylang/ssl 3.0.0 has other breaking changes too: constructing a `Digest`, `Digest.final`, and `HmacSha256` are now partial; `SSLContext.alpn_set_resolver` takes an `ALPNProtocolResolver val` where it took a `box`; `SSLState` gained an `SSLDisposed` member, which breaks an exhaustive match on `SSL.state()`; and a reference typed `HashFn tag` no longer compiles, so type it `val` or `box`. See ponylang/ssl's own 3.0.0 release notes for the full list.
+All twelve protocol-version primitives were renamed the same way. ponylang/ssl 3.0.0 has other breaking changes too: constructing a `Digest`, `Digest.final`, and `HmacSha256` are now partial; `SSLContext.alpn_set_resolver` takes an `ALPNProtocolResolver val` where it took a `box`; `SSLState` gained an `SSLDisposed` member, which breaks an exhaustive match on `SSL.state()`; and a reference typed `HashFn tag` no longer compiles, so type it `val` or `box`. See ponylang/ssl's own 3.0.0 and 4.0.0 release notes for the full list.
+
+## Fix additional SSL connection bugs
+
+Fixed additional bugs in SSL connection handling that could cause handshake failures to be misreported, data to be silently dropped during encrypted writes, and one connection's SSL failure to close a different connection.
+
+## Fix a macOS bug where setting up a connection could close an unrelated file descriptor
+
+On macOS, setting up a connection could close one of its own file descriptors twice. The operating system can hand that descriptor number to something else in between, so the second close lands on whatever got it — an unrelated connection or file closes silently. Connecting to a host that resolves to more than one address (including `localhost`) is the likeliest way to hit it. The same cleanup also miscounted outstanding connection attempts, which could abandon a working attempt and report the connection as failed, or leave a connection that was asked to close gracefully never finishing. Linux and Windows were not affected.
