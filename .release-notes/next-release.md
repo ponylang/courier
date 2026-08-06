@@ -45,3 +45,7 @@ Fixed additional bugs in SSL connection handling that could cause handshake fail
 ## Fix a macOS bug where setting up a connection could close an unrelated file descriptor
 
 On macOS, setting up a connection could close one of its own file descriptors twice. The operating system can hand that descriptor number to something else in between, so the second close lands on whatever got it — an unrelated connection or file closes silently. Connecting to a host that resolves to more than one address (including `localhost`) is the likeliest way to hit it. The same cleanup also miscounted outstanding connection attempts, which could abandon a working attempt and report the connection as failed, or leave a connection that was asked to close gracefully never finishing. Linux and Windows were not affected.
+## Send TLS close_notify on graceful close
+
+Closing a TLS connection now sends a `close_notify` alert before the TCP shutdown. Without it, the peer could not distinguish a clean close from a truncated stream (RFC 8446 §6.1).
+
