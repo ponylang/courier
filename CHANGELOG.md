@@ -13,17 +13,15 @@ All notable changes to this project will be documented in this file. This projec
 - Fix a hang when writing to a socket under load ([PR #68](https://github.com/ponylang/courier/pull/68))
 - Fix additional SSL connection bugs ([PR #75](https://github.com/ponylang/courier/pull/75))
 - Fix a macOS bug where setting up a connection could close an unrelated file descriptor ([PR #75](https://github.com/ponylang/courier/pull/75))
-
+- Send TLS close_notify on graceful close ([PR #77](https://github.com/ponylang/courier/pull/77))
 
 ### Added
-
 
 
 ### Changed
 
 - Require ponyc 0.67.0 or later ([PR #68](https://github.com/ponylang/courier/pull/68))
 - Move to ponylang/ssl 4.0.0 ([PR #68](https://github.com/ponylang/courier/pull/68))
-
 
 ## [0.4.0] - 2026-06-30
 
