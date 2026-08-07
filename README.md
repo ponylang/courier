@@ -10,7 +10,7 @@ courier is beta quality software that will change frequently. Expect breaking ch
 
 * Requires ponyc 0.67.0 or later.
 * Install [corral](https://github.com/ponylang/corral)
-* `corral add github.com/ponylang/courier.git --version 0.4.0`
+* `corral add github.com/ponylang/courier.git --version 0.5.0`
 * `corral fetch` to fetch your dependencies
 * `use "courier"` to include this package
 * `corral run -- ponyc` to compile your application
