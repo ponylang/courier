@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a CHANGELOG](http://keepachangelog.com/).
 
-## [unreleased] - unreleased
+## [0.5.0] - 2026-08-07
 
 ### Fixed
 
@@ -14,9 +14,6 @@ All notable changes to this project will be documented in this file. This projec
 - Fix additional SSL connection bugs ([PR #75](https://github.com/ponylang/courier/pull/75))
 - Fix a macOS bug where setting up a connection could close an unrelated file descriptor ([PR #75](https://github.com/ponylang/courier/pull/75))
 - Send TLS close_notify on graceful close ([PR #77](https://github.com/ponylang/courier/pull/77))
-
-### Added
-
 
 ### Changed
 
