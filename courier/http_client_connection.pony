@@ -401,6 +401,6 @@ class HTTPClientConnection is
       match _lifecycle_event_receiver
       | let r: HTTPClientLifecycleEventReceiver ref => r.on_closed()
       end
-      _tcp_connection.close()
       _state = _Closed
+      _tcp_connection.close()
     end
