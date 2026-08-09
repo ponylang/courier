@@ -240,6 +240,3 @@ actor \nodoc\ Main is TestList
     test(_TestFollowerCrossOriginRedirectSetsUpFactory)
     test(_TestFollowerCompleteForwardsWithoutRedirect)
     test(_TestFollowerErrorSuppressesBodyAndComplete)
-
-    // Read loop tests
-    test(_TestYieldReadOrdering)

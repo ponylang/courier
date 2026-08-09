@@ -42,7 +42,6 @@ class HTTPClientConnection is
   var _state: _ConnectionState = _Active
   var _request_state: (_Idle | _AwaitingResponse) = _Idle
   var _parser: (_ResponseParser | None) = None
-  var _yield_read: Bool = false
 
   new none() =>
     """
@@ -85,7 +84,8 @@ class HTTPClientConnection is
         config.from,
         client_actor,
         this
-        where connection_timeout = config.connection_timeout)
+        where read_buffer_size = config.read_buffer_size,
+          connection_timeout = config.connection_timeout)
 
   new ssl(
     auth: lori.TCPConnectAuth,
@@ -116,7 +116,8 @@ class HTTPClientConnection is
         config.from,
         client_actor,
         this
-        where connection_timeout = config.connection_timeout)
+        where read_buffer_size = config.read_buffer_size,
+          connection_timeout = config.connection_timeout)
 
   fun ref _connection(): lori.TCPConnection =>
     """
@@ -172,19 +173,6 @@ class HTTPClientConnection is
     in `_close_connection()`.
     """
     _close_connection()
-
-  fun ref yield_read() =>
-    """
-    Stop reading once the parser finishes the data it is working on, giving
-    other actors a chance to run. Reading resumes on the next scheduler turn;
-    there is nothing to call to resume it.
-
-    Intended for use inside `on_body_chunk()` to prevent a single large
-    response from starving other actors. Expect more callbacks after this
-    call: every chunk left in the data being parsed fires `on_body_chunk()`
-    before reading stops.
-    """
-    _yield_read = true
 
   fun ref set_timer(duration: lori.TimerDuration)
     : (lori.TimerToken | lori.SetTimerError)
@@ -251,16 +239,8 @@ class HTTPClientConnection is
     end
 
   fun ref _on_received(data: Array[U8] iso): lori.ReadAction =>
-    // `yield_read()` runs from a callback the parser fires while handling
-    // this data, so reading the flag first would apply the yield one
-    // message late.
     _state.on_received(this, consume data)
-    if _yield_read then
-      _yield_read = false
-      lori.YieldReading
-    else
-      lori.KeepReading
-    end
+    lori.KeepReading
 
   fun ref _on_closed() =>
     _state.on_closed(this)
