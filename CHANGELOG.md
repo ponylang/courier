@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 
+- Add opt-in redirect following ([PR #63](https://github.com/ponylang/courier/pull/63))
 
 ### Changed
 
