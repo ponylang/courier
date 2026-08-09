@@ -41,7 +41,7 @@ class \nodoc\ iso _PropertyURLRoundtrip is Property1[_ValidURLParts]
         ph.assert_true(parsed.query is None)
       end
     | let err: URLParseError =>
-      ph.fail("parse failed: " + err.string())
+      ph.fail("unexpected parse error")
     end
 
 class \nodoc\ iso _PropertyURLDefaultPort is Property1[_ValidURLParts]
@@ -62,7 +62,7 @@ class \nodoc\ iso _PropertyURLDefaultPort is Property1[_ValidURLParts]
         if parsed.scheme is SchemeHTTP then "80" else "443" end
       ph.assert_eq[String val](expected, parsed.port)
     | let err: URLParseError =>
-      ph.fail("parse failed: " + err.string())
+      ph.fail("unexpected parse error")
     end
 
 class \nodoc\ iso _PropertyURLRequestPathStartsWithSlash
@@ -82,7 +82,7 @@ class \nodoc\ iso _PropertyURLRequestPathStartsWithSlash
         rp.at("/"),
         "request_path should start with /: " + rp)
     | let err: URLParseError =>
-      ph.fail("parse failed: " + err.string())
+      ph.fail("unexpected parse error")
     end
 
 // ---------------------------------------------------------------------------
@@ -200,7 +200,7 @@ class \nodoc\ iso _TestURLFullComponents is UnitTest
       h.assert_eq[String val]("/api/v1?key=value", u.request_path())
       h.assert_true(u.is_ssl())
     | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
+      h.fail("unexpected parse error")
     end
 
 class \nodoc\ iso _TestURLMinimal is UnitTest
@@ -217,7 +217,7 @@ class \nodoc\ iso _TestURLMinimal is UnitTest
       h.assert_true(u.query is None)
       h.assert_false(u.is_ssl())
     | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
+      h.fail("unexpected parse error")
     end
 
 class \nodoc\ iso _TestURLDefaultPortHTTP is UnitTest
@@ -230,7 +230,7 @@ class \nodoc\ iso _TestURLDefaultPortHTTP is UnitTest
       h.assert_eq[String val]("80", u.port)
       h.assert_false(u.is_ssl())
     | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
+      h.fail("unexpected parse error")
     end
 
 class \nodoc\ iso _TestURLDefaultPortHTTPS is UnitTest
@@ -243,7 +243,7 @@ class \nodoc\ iso _TestURLDefaultPortHTTPS is UnitTest
       h.assert_eq[String val]("443", u.port)
       h.assert_true(u.is_ssl())
     | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
+      h.fail("unexpected parse error")
     end
 
 class \nodoc\ iso _TestURLMissingPathDefault is UnitTest
@@ -256,7 +256,7 @@ class \nodoc\ iso _TestURLMissingPathDefault is UnitTest
       h.assert_eq[String val]("/", u.path)
       h.assert_eq[String val]("/", u.request_path())
     | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
+      h.fail("unexpected parse error")
     end
 
 class \nodoc\ iso _TestURLFragmentDiscarded is UnitTest
@@ -269,7 +269,7 @@ class \nodoc\ iso _TestURLFragmentDiscarded is UnitTest
       h.assert_eq[String val]("/path", u.path)
       h.assert_true(u.query is None)
     | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
+      h.fail("unexpected parse error")
     end
 
 class \nodoc\ iso _TestURLIPv6Host is UnitTest
@@ -283,7 +283,7 @@ class \nodoc\ iso _TestURLIPv6Host is UnitTest
       h.assert_eq[String val]("8080", u.port)
       h.assert_eq[String val]("/path", u.path)
     | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
+      h.fail("unexpected parse error")
     end
 
 class \nodoc\ iso _TestURLIPv6DefaultPort is UnitTest
@@ -297,7 +297,7 @@ class \nodoc\ iso _TestURLIPv6DefaultPort is UnitTest
       h.assert_eq[String val]("80", u.port)
       h.assert_eq[String val]("/path", u.path)
     | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
+      h.fail("unexpected parse error")
     end
 
 class \nodoc\ iso _TestURLCaseInsensitiveScheme is UnitTest
@@ -309,13 +309,13 @@ class \nodoc\ iso _TestURLCaseInsensitiveScheme is UnitTest
     | let u: ParsedURL =>
       h.assert_true(u.scheme is SchemeHTTP)
     | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
+      h.fail("unexpected parse error")
     end
     match \exhaustive\ URL.parse("HtTpS://example.com/path")
     | let u: ParsedURL =>
       h.assert_true(u.scheme is SchemeHTTPS)
     | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
+      h.fail("unexpected parse error")
     end
 
 class \nodoc\ iso _TestURLEmptyPortDefault is UnitTest
@@ -327,7 +327,7 @@ class \nodoc\ iso _TestURLEmptyPortDefault is UnitTest
     | let u: ParsedURL =>
       h.assert_eq[String val]("80", u.port)
     | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
+      h.fail("unexpected parse error")
     end
 
 class \nodoc\ iso _TestURLErrorMissingScheme is UnitTest
@@ -423,7 +423,7 @@ class \nodoc\ iso _TestURLValidPort65535 is UnitTest
     | let u: ParsedURL =>
       h.assert_eq[String val]("65535", u.port)
     | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
+      h.fail("unexpected parse error")
     end
 
 class \nodoc\ iso _TestURLQueryWithoutPath is UnitTest
@@ -440,6 +440,6 @@ class \nodoc\ iso _TestURLQueryWithoutPath is UnitTest
       end
       h.assert_eq[String val]("/?key=value", u.request_path())
     | let err: URLParseError =>
-      h.fail("parse failed: " + err.string())
+      h.fail("unexpected parse error")
     end
 
