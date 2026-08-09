@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Changed
 
+- Remove Stringable from error types ([PR #81](https://github.com/ponylang/courier/pull/81))
 
 ## [0.5.0] - 2026-08-07
 
