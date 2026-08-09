@@ -16,5 +16,13 @@ actor Main
       env.out.print("  request_path: " + url.request_path())
       env.out.print("  is_ssl: " + url.is_ssl().string())
     | let err: URLParseError =>
-      env.out.print("URL parse error: " + err.string())
+      let msg =
+        match \exhaustive\ err
+        | MissingScheme => "missing scheme"
+        | UnsupportedScheme => "unsupported scheme"
+        | MissingHost => "missing host"
+        | InvalidPort => "invalid port"
+        | UserInfoNotSupported => "userinfo not supported"
+        end
+      env.out.print("URL parse error: " + msg)
     end

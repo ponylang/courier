@@ -72,7 +72,15 @@ actor ResponseTimeoutClient is HTTPClientConnectionActor
     end
 
   fun ref on_connection_failure(reason: ConnectionFailureReason) =>
-    _out.print("Connection failed: " + reason.string())
+    let msg =
+      match \exhaustive\ reason
+      | ConnectionFailedDNS => "DNS resolution failed"
+      | ConnectionFailedTCP => "TCP connection failed"
+      | ConnectionFailedSSL => "SSL handshake failed"
+      | ConnectionFailedTimeout => "connection timed out"
+      | ConnectionFailedTimerError => "timer setup failed"
+      end
+    _out.print("Connection failed: " + msg)
 
   fun ref on_response(response: Response val) =>
     _out.print("< " + response.status.string() + " " + response.reason)
