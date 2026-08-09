@@ -6,3 +6,29 @@ The follower sits in the callback path and handles redirect hops internally. The
 
 Security rules are applied before any hop: an `https`-to-`http` downgrade is refused, and on a cross-origin hop the `Authorization`, `Cookie`, `Proxy-Authorization`, `Host`, and `Referer` headers are stripped. A redirect that cannot be followed — too many hops, `Location` missing or unparseable, or an insecure downgrade — arrives at `on_redirect_error` on `RedirectFollowerNotify`.
 
+## Remove Stringable from error types
+
+`ParseError`, `ConnectionFailureReason`, and `URLParseError` primitives no longer implement `Stringable`. Users receive these through callbacks and can match on the concrete primitive to produce whatever string they want.
+
+Before:
+
+```pony
+fun ref on_connection_failure(reason: ConnectionFailureReason) =>
+  _out.print("Connection failed: " + reason.string())
+```
+
+After:
+
+```pony
+fun ref on_connection_failure(reason: ConnectionFailureReason) =>
+  let msg =
+    match \exhaustive\ reason
+    | ConnectionFailedDNS => "DNS resolution failed"
+    | ConnectionFailedTCP => "TCP connection failed"
+    | ConnectionFailedSSL => "SSL handshake failed"
+    | ConnectionFailedTimeout => "connection timed out"
+    | ConnectionFailedTimerError => "timer setup failed"
+    end
+  _out.print("Connection failed: " + msg)
+```
+
