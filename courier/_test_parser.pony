@@ -920,3 +920,4 @@ class \nodoc\ iso _TestMultiple1xx is UnitTest
     end
     h.assert_eq[String val](
       "Done", notify.collected_body_string())
+

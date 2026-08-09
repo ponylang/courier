@@ -95,11 +95,33 @@ actor MyClient is HTTPClientConnectionActor
     end
 ```
 
+## Following Redirects
+
+Redirect following is opt-in via `RedirectFollower`, which wraps an
+`HTTPClientConnection` and intercepts redirect responses transparently. The
+actor's callback code has no redirect awareness — the follower handles hops
+internally and forwards only the final response.
+
+Same-origin redirects reuse the existing TCP connection. Cross-origin redirects
+use a `RedirectConnectionFactory` to create a new one.
+
+Implement `RedirectFollowerNotify` (which extends
+`HTTPClientLifecycleEventReceiver` with `on_redirect_error`), store a
+`RedirectFollower` instead of an `HTTPClientConnection`, and delegate
+`_http_client_connection()` to `_http.connection()`.
+
 ## Key Types
 
 - `HTTPClientConnectionActor` — trait for your actor
 - `HTTPClientConnection` — protocol handler class (stored as actor field)
 - `HTTPClientLifecycleEventReceiver` — callback trait (default no-ops)
+- `RedirectFollower` — wraps a connection and follows redirects transparently
+- `RedirectFollowerNotify` — callback trait for actors using RedirectFollower
+- `RedirectConnectionFactory` — creates connections for cross-origin redirects
+- `Redirect` — a validated redirect hop (internal to RedirectFollower)
+- `RedirectError` — why a redirect was not followed (`TooManyRedirects`,
+  `MissingLocation`, `InvalidLocation`, `InsecureRedirect`)
+- `Origin` — a URL's scheme, host, and port (the cross-origin boundary)
 - `HTTPRequest` — request data (method, path, headers, body)
 - `Response` — parsed response metadata (version, status, reason, headers)
 - `ClientConnectionConfig` — parser limits, idle timeout, connection timeout,

@@ -18,6 +18,10 @@
     {
       "locator": "github.com/ponylang/ssl.git",
       "version": "4.0.0"
+    },
+    {
+      "locator": "github.com/ponylang/uri.git",
+      "version": "0.3.0"
     }
   ]
 }
