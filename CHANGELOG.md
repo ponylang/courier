@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 
+- Fix on_closed firing twice when closing a backed-up connection ([PR #84](https://github.com/ponylang/courier/pull/84))
 
 ### Added
 
