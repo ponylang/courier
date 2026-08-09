@@ -30,6 +30,10 @@ Connects to `httpbin.org` over HTTPS and POSTs a multipart form with a text fiel
 
 Connects to `jsonplaceholder.typicode.com` over HTTPS, fetches a JSON todo item, decodes the response into a typed `Todo` object, and prints selected fields. Demonstrates `Request` builder for request construction, `ResponseCollector` for body accumulation, `JSONDecoder` and `DecodeJSON` for typed JSON decoding, and `HTTPClientConnection.ssl()` for TLS connections.
 
+## [redirect](redirect/)
+
+Connects to `httpbin.org` over HTTPS and requests `/redirect/3`, which returns three chained 302 redirects before a final 200. The actor's callbacks see only the final response — `RedirectFollower` handles the hops internally. Demonstrates `RedirectFollower` wrapping an `HTTPClientConnection`, `RedirectFollowerNotify` for the `on_redirect_error` callback, `RedirectConnectionFactory` as a lambda for cross-origin hops, and `_http_client_connection()` delegating to `_http.connection()`.
+
 ## [response-timeout](response-timeout/)
 
 Connects to `httpbin.org` over HTTPS with a 3-second response deadline on a deliberately slow endpoint. The timer fires before the response arrives, demonstrating `HTTPClientConnection.set_timer()`, `HTTPClientConnection.cancel_timer()`, and `on_timer()` on `HTTPClientLifecycleEventReceiver` in a response deadline pattern.

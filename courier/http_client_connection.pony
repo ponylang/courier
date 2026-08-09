@@ -33,7 +33,7 @@ class HTTPClientConnection is
       _http = HTTPClientConnection(auth, host, port, this, config)
   ```
   """
-  let _lifecycle_event_receiver:
+  var _lifecycle_event_receiver:
     (HTTPClientLifecycleEventReceiver ref | None)
   let _config: (ClientConnectionConfig | None)
   let _host: String
@@ -123,6 +123,13 @@ class HTTPClientConnection is
     Return the underlying TCP connection.
     """
     _tcp_connection
+
+  fun ref _set_lifecycle_receiver(r: HTTPClientLifecycleEventReceiver ref) =>
+    """
+    Replace the lifecycle event receiver so callbacks route through a
+    different object.
+    """
+    _lifecycle_event_receiver = r
 
   fun ref send_request(request: HTTPRequest val): SendRequestResult =>
     """

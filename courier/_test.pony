@@ -206,5 +206,40 @@ actor \nodoc\ Main is TestList
     test(_TestURLValidPort65535)
     test(_TestURLQueryWithoutPath)
 
+    // Redirect tests
+    test(_TestRedirectCrossOriginStripsCredentials)
+    test(_TestRedirectSameOriginKeepsCredentials)
+    test(_TestRedirectRefusesDowngrade)
+    test(_TestRedirectMissingLocation)
+    test(_TestRedirectLimitExhausted)
+    test(_TestRedirectRemainingDecrements)
+    test(_TestRedirect303PostBecomesGet)
+    test(_TestRedirect307PreservesMethodAndBody)
+    test(_TestRedirect301PostBecomesGet)
+    test(_TestRedirect302PostBecomesGet)
+    test(_TestRedirect308PreservesMethodAndBody)
+    test(_TestRedirectNonRedirectStatus)
+    test(_TestRedirectRelativeLocation)
+    test(_TestRedirectUnsupportedSchemeLocation)
+    test(Property1UnitTest[(U16, String val)](
+      _PropertyRedirectStripsCredentials))
+
+    // Redirect follower tests
+    test(_TestFollowerForwardsNonRedirect)
+    test(_TestFollowerForwardsNonRedirectWithLastRequest)
+    test(_TestFollowerInterceptsRedirect)
+    test(_TestFollowerRedirectErrorForwards)
+    test(_TestFollowerSuppressesBodyDuringRedirect)
+    test(_TestFollowerForwardsBodyWithoutRedirect)
+    test(_TestFollowerSuppressesClosedDuringRedirect)
+    test(_TestFollowerForwardsClosedWithoutRedirect)
+    test(_TestFollowerForwardsPassthroughCallbacks)
+    test(_TestFollowerConnectedForwardsWithoutPending)
+    test(_TestFollowerPendingRedirectSuppressesConnectedForward)
+    test(_TestFollowerSameOriginRedirectDoesNotUseFactory)
+    test(_TestFollowerCrossOriginRedirectSetsUpFactory)
+    test(_TestFollowerCompleteForwardsWithoutRedirect)
+    test(_TestFollowerErrorSuppressesBodyAndComplete)
+
     // Read loop tests
     test(_TestYieldReadOrdering)
