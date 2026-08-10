@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file. This projec
 
 - Remove Stringable from error types ([PR #81](https://github.com/ponylang/courier/pull/81))
 - Replace yield_read() with a settable read buffer size ([PR #83](https://github.com/ponylang/courier/pull/83))
+- Switch URL handling to ponylang/uri ([PR #86](https://github.com/ponylang/courier/pull/86))
 
 ## [0.5.0] - 2026-08-07
 
