@@ -2,6 +2,7 @@ use "../../courier"
 use "files"
 use lori = "lori"
 use ssl = "ssl/net"
+use uri = "uri"
 
 actor Main
   new create(env: Env) =>
@@ -53,16 +54,20 @@ actor RedirectClient is
         auth, ssl_ctx, host, port, this, config)
 
     let factory =
-      {ref(target: ParsedURL val)
+      {ref(target: uri.URI val)
         (auth, ssl_ctx, config, client = this)
         : HTTPClientConnection
       =>
-        if target.is_ssl() then
+        let o = Origin.from_uri(target)
+        if o.host.size() == 0 then
+          return HTTPClientConnection.none()
+        end
+        if o.secure then
           HTTPClientConnection.ssl(
-            auth, ssl_ctx, target.host, target.port, client, config)
+            auth, ssl_ctx, o.host, o.port, client, config)
         else
           HTTPClientConnection(
-            auth, target.host, target.port, client, config)
+            auth, o.host, o.port, client, config)
         end
       }
 

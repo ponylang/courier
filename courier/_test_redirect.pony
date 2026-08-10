@@ -1,3 +1,4 @@
+use uri = "uri"
 use "pony_check"
 use "pony_test"
 
@@ -32,6 +33,12 @@ primitive \nodoc\ _RedirectTestKit
     : (Redirect | RedirectError | _NotARedirect)
   =>
     _RedirectDecision(sent, github_origin(), resp, max_redirects)
+
+  fun target_host(r: Redirect): String =>
+    match r.target().authority
+    | let a: uri.URIAuthority => a.host
+    else ""
+    end
 
 class \nodoc\ iso _TestRedirectCrossOriginStripsCredentials is UnitTest
   """
@@ -74,7 +81,10 @@ class \nodoc\ iso _TestRedirectCrossOriginStripsCredentials is UnitTest
       | let v: String => h.assert_eq[String val]("ponyup", v)
       | None => h.fail("user-agent must survive")
       end
-      h.assert_eq[String val]("cdn.example.com", r.target().host)
+      h.assert_eq[String val](
+        "cdn.example.com", _RedirectTestKit.target_host(r))
+      h.assert_eq[String val](
+        "/signed/file?sig=123", r.request().path)
     | let _: RedirectError => h.fail("expected Redirect, got a RedirectError")
     | _NotARedirect => h.fail("expected Redirect, got _NotARedirect")
     end
@@ -311,7 +321,8 @@ class \nodoc\ iso _TestRedirectRelativeLocation is UnitTest
     let response = _RedirectTestKit.response(302, "../x")
     match \exhaustive\ _RedirectTestKit.decide(sent, response)
     | let r: Redirect =>
-      h.assert_eq[String val]("github.com", r.target().host)
+      h.assert_eq[String val](
+        "github.com", _RedirectTestKit.target_host(r))
       h.assert_eq[String val]("/a/x", r.target().path)
     | let _: RedirectError => h.fail("expected Redirect, got a RedirectError")
     | _NotARedirect => h.fail("expected Redirect")
@@ -335,13 +346,112 @@ class \nodoc\ iso _TestRedirectUnsupportedSchemeLocation is UnitTest
       | let r: Redirect =>
         h.fail(
           "must reject unfollowable scheme in " + loc
-            + ", got target host " + r.target().host)
+            + ", got target host " + _RedirectTestKit.target_host(r))
       | let _: RedirectError =>
         h.fail(
           "expected InvalidLocation for " + loc
             + ", got a different RedirectError")
       | _NotARedirect => h.fail("expected InvalidLocation for " + loc)
       end
+    end
+
+class \nodoc\ iso _TestRedirectUserinfoRejected is UnitTest
+  """A Location with userinfo is InvalidLocation per RFC 7230 section 2.7.1."""
+  fun name(): String => "redirect/userinfo_rejected"
+
+  fun apply(h: TestHelper) =>
+    let response =
+      _RedirectTestKit.response(302, "https://user:pass@evil.com/path")
+    match \exhaustive\ _RedirectTestKit.decide(
+      _RedirectTestKit.request(), response)
+    | InvalidLocation => None
+    | let r: Redirect =>
+      h.fail("must reject Location with userinfo, got Redirect")
+    | let _: RedirectError =>
+      h.fail("expected InvalidLocation, got a different RedirectError")
+    | _NotARedirect => h.fail("expected InvalidLocation")
+    end
+
+class \nodoc\ iso _TestRedirectIPv6Origin is UnitTest
+  """A redirect to an IPv6 host strips brackets for the origin."""
+  fun name(): String => "redirect/ipv6_origin"
+
+  fun apply(h: TestHelper) =>
+    let origin = Origin(true, "github.com", "443")
+    let sent = _RedirectTestKit.request()
+    let response =
+      _RedirectTestKit.response(302, "https://[::1]:8443/path")
+    match \exhaustive\ _RedirectDecision(sent, origin, response, 5)
+    | let r: Redirect =>
+      let target_origin = Origin.from_uri(r.target())
+      h.assert_eq[String val]("::1", target_origin.host)
+      h.assert_eq[String val]("8443", target_origin.port)
+      h.assert_true(target_origin.secure)
+    | let _: RedirectError => h.fail("expected Redirect, got a RedirectError")
+    | _NotARedirect => h.fail("expected Redirect")
+    end
+
+class \nodoc\ iso _TestRedirectEmptyPathDefaultsToSlash is UnitTest
+  """A Location with no path defaults to "/" in the request target."""
+  fun name(): String => "redirect/empty_path_defaults_to_slash"
+
+  fun apply(h: TestHelper) =>
+    let response =
+      _RedirectTestKit.response(302, "https://cdn.example.com")
+    match \exhaustive\ _RedirectTestKit.decide(
+      _RedirectTestKit.request(), response)
+    | let r: Redirect =>
+      h.assert_eq[String val]("/", r.request().path)
+    | let _: RedirectError => h.fail("expected Redirect, got a RedirectError")
+    | _NotARedirect => h.fail("expected Redirect")
+    end
+
+class \nodoc\ iso _TestRedirectEmptyPathWithQuery is UnitTest
+  """A Location with no path but a query defaults to "/?query"."""
+  fun name(): String => "redirect/empty_path_with_query"
+
+  fun apply(h: TestHelper) =>
+    let response =
+      _RedirectTestKit.response(302, "https://cdn.example.com?foo=bar")
+    match \exhaustive\ _RedirectTestKit.decide(
+      _RedirectTestKit.request(), response)
+    | let r: Redirect =>
+      h.assert_eq[String val]("/?foo=bar", r.request().path)
+    | let _: RedirectError => h.fail("expected Redirect, got a RedirectError")
+    | _NotARedirect => h.fail("expected Redirect")
+    end
+
+class \nodoc\ iso _TestRedirectEmptyHostRejected is UnitTest
+  """A Location with an empty host is InvalidLocation."""
+  fun name(): String => "redirect/empty_host_rejected"
+
+  fun apply(h: TestHelper) =>
+    let response = _RedirectTestKit.response(302, "https:///path")
+    match \exhaustive\ _RedirectTestKit.decide(
+      _RedirectTestKit.request(), response)
+    | InvalidLocation => None
+    | let r: Redirect =>
+      h.fail("must reject Location with empty host, got Redirect")
+    | let _: RedirectError =>
+      h.fail("expected InvalidLocation, got a different RedirectError")
+    | _NotARedirect => h.fail("expected InvalidLocation")
+    end
+
+class \nodoc\ iso _TestRedirectMixedCaseScheme is UnitTest
+  """Scheme comparison is case-insensitive per RFC 3986."""
+  fun name(): String => "redirect/mixed_case_scheme"
+
+  fun apply(h: TestHelper) =>
+    let response =
+      _RedirectTestKit.response(302, "HTTPS://cdn.example.com/file")
+    match \exhaustive\ _RedirectTestKit.decide(
+      _RedirectTestKit.request(), response)
+    | let r: Redirect =>
+      h.assert_eq[String val](
+        "cdn.example.com", _RedirectTestKit.target_host(r))
+    | let _: RedirectError =>
+      h.fail("HTTPS must be accepted case-insensitively, got RedirectError")
+    | _NotARedirect => h.fail("expected Redirect")
     end
 
 class \nodoc\ iso _PropertyRedirectStripsCredentials

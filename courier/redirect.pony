@@ -1,3 +1,5 @@
+use uri = "uri"
+
 class val Redirect
   """
   A validated redirect hop, ready to follow.
@@ -13,13 +15,13 @@ class val Redirect
   be bypassed and the remaining hop count cannot be reset.
   """
   let _status: U16
-  let _target: ParsedURL val
+  let _target: uri.URI val
   let _request: HTTPRequest val
   let _remaining: USize
 
   new val _create(
     status': U16,
-    target': ParsedURL val,
+    target': uri.URI val,
     request': HTTPRequest val,
     remaining': USize)
   =>
@@ -34,7 +36,7 @@ class val Redirect
     """
     _status
 
-  fun target(): ParsedURL val =>
+  fun target(): uri.URI val =>
     """
     The resolved absolute URL to follow.
     """

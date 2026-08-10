@@ -38,12 +38,17 @@ primitive _RedirectDecision
 
     let target =
       match \exhaustive\ _resolve_target(origin, sent.path, location)
-      | let p: ParsedURL val => p
+      | let u: uri.URI val => u
       | let e: RedirectError => return e
       end
 
-    // Refuse an https -> http downgrade before anything else is built.
-    if origin.secure and (not target.is_ssl()) then
+    let target_ssl =
+      match target.scheme
+      | let s: String => s.lower() == "https"
+      else false
+      end
+
+    if origin.secure and (not target_ssl) then
       return InsecureRedirect
     end
 
@@ -51,16 +56,23 @@ primitive _RedirectDecision
       return TooManyRedirects
     end
 
-    let cross_origin = not (origin == Origin._from_url(target))
+    let cross_origin = not (origin == Origin.from_uri(target))
     (let new_method, let drop_body) = _rewrite(sent.method, response.status)
     let new_headers = _rewrite_headers(sent.headers, cross_origin, drop_body)
     let new_body: (Array[U8] val | None) =
       if drop_body then None else sent.body end
 
+    let path = if target.path == "" then "/" else target.path end
+    let request_path: String val =
+      match \exhaustive\ target.query
+      | let q: String => path + "?" + q
+      | None => path
+      end
+
     Redirect._create(
       response.status,
       target,
-      HTTPRequest(new_method, target.request_path(), new_headers, new_body),
+      HTTPRequest(new_method, request_path, new_headers, new_body),
       max_redirects - 1)
 
   fun _is_redirect_status(status: U16): Bool =>
@@ -71,11 +83,8 @@ primitive _RedirectDecision
     origin: Origin,
     request_target: String val,
     location: String val)
-    : (ParsedURL val | RedirectError)
+    : (uri.URI val | RedirectError)
   =>
-    // Location is resolved against the request URL via ponylang/uri. A
-    // resolved scheme outside http/https (data:, file:, ...) fails URL.parse
-    // and becomes InvalidLocation.
     let base_url: String val =
       recover val
         String
@@ -101,10 +110,29 @@ primitive _RedirectDecision
       | let u: uri.URI => u
       | let _: uri.ResolveURIError => return InvalidLocation
       end
-    match \exhaustive\ URL.parse(resolved.string())
-    | let p: ParsedURL val => p
-    | let _: URLParseError => return InvalidLocation
+
+    // Reject schemes courier cannot follow (data:, file:, ftp:, ...).
+    match resolved.scheme
+    | let s: String =>
+      let lower = s.lower()
+      if (lower != "http") and (lower != "https") then
+        return InvalidLocation
+      end
+    else
+      return InvalidLocation
     end
+
+    // An HTTP URL must have an authority with a non-empty host and no
+    // userinfo (RFC 7230 section 2.7.1).
+    match resolved.authority
+    | let a: uri.URIAuthority =>
+      if a.host.size() == 0 then return InvalidLocation end
+      if not (a.userinfo is None) then return InvalidLocation end
+    else
+      return InvalidLocation
+    end
+
+    resolved
 
   fun _rewrite(method: Method, status: U16): (Method, Bool) =>
     // 307/308 preserve method and body. 303 becomes GET (HEAD stays HEAD).

@@ -2,10 +2,6 @@
 
 Each subdirectory is a self-contained Pony program demonstrating a different part of the courier library. Ordered from simplest to most involved.
 
-## [url-parsing](url-parsing/)
-
-Parses `https://httpbin.org/get?source=courier` with `URL.parse()` and prints the decomposed components: scheme, host, port, path, query, `request_path()`, and `is_ssl()`. Demonstrates `URL.parse()` for URL decomposition and error handling via the `URLParseError` union.
-
 ## [basic](basic/)
 
 Connects to `example.com:80`, sends an HTTP GET request for `/`, and prints the response status, headers, and body to stdout. Demonstrates the full lifecycle: `HTTPClientConnectionActor` implementation, `on_connected` to send the request, response callbacks for status/headers/body, exhaustive `ConnectionFailureReason` matching in `on_connection_failure`, and connection close after completion. Uses `ResponseCollector` to accumulate streaming body chunks into a single `HTTPResponse`. Start here if you're new to the library.
@@ -32,7 +28,7 @@ Connects to `jsonplaceholder.typicode.com` over HTTPS, fetches a JSON todo item,
 
 ## [redirect](redirect/)
 
-Connects to `httpbin.org` over HTTPS and requests `/redirect/3`, which returns three chained 302 redirects before a final 200. The actor's callbacks see only the final response — `RedirectFollower` handles the hops internally. Demonstrates `RedirectFollower` wrapping an `HTTPClientConnection`, `RedirectFollowerNotify` for the `on_redirect_error` callback, `RedirectConnectionFactory` as a lambda for cross-origin hops, and `_http_client_connection()` delegating to `_http.connection()`.
+Connects to `httpbin.org` over HTTPS and requests `/redirect/3`, which returns three chained 302 redirects before a final 200. The actor's callbacks see only the final response — `RedirectFollower` handles the hops internally. Demonstrates `RedirectFollower` wrapping an `HTTPClientConnection`, `RedirectFollowerNotify` for the `on_redirect_error` callback, `RedirectConnectionFactory` as a lambda for cross-origin hops (using `Origin.from_uri()` to extract the connection parameters from the redirect target), and `_http_client_connection()` delegating to `_http.connection()`.
 
 ## [response-timeout](response-timeout/)
 
