@@ -1,4 +1,5 @@
 use lori = "lori"
+use uri = "uri"
 
 primitive _Suppressing
 
@@ -28,16 +29,20 @@ class RedirectFollower is HTTPClientLifecycleEventReceiver
       let conn = HTTPClientConnection.ssl(
         auth, ssl_ctx, host, port, this, config)
       let factory =
-        {ref(target: ParsedURL val)
+        {ref(target: uri.URI val)
           (auth, ssl_ctx, config, client = this)
           : HTTPClientConnection
         =>
-          if target.is_ssl() then
+          let o = Origin.from_uri(target)
+          if o.host.size() == 0 then
+            return HTTPClientConnection.none()
+          end
+          if o.secure then
             HTTPClientConnection.ssl(
-              auth, ssl_ctx, target.host, target.port, client, config)
+              auth, ssl_ctx, o.host, o.port, client, config)
           else
             HTTPClientConnection(
-              auth, target.host, target.port, client, config)
+              auth, o.host, o.port, client, config)
           end
         }
       _http = RedirectFollower(conn, this, factory, 5,
@@ -107,7 +112,7 @@ class RedirectFollower is HTTPClientLifecycleEventReceiver
     _receiver = object ref is RedirectFollowerNotify end
     _factory =
       object ref is RedirectConnectionFactory
-        fun ref apply(target: ParsedURL val): HTTPClientConnection =>
+        fun ref apply(target: uri.URI val): HTTPClientConnection =>
           HTTPClientConnection.none()
       end
     _remaining = 0
@@ -169,7 +174,7 @@ class RedirectFollower is HTTPClientLifecycleEventReceiver
     match _pending = None
     | _Suppressing => return
     | let r: Redirect =>
-      let target_origin = Origin._from_url(r.target())
+      let target_origin = Origin.from_uri(r.target())
       if _origin == target_origin then
         _remaining = r.remaining()
         _last_request = r.request()

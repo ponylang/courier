@@ -179,33 +179,6 @@ actor \nodoc\ Main is TestList
     test(_TestMultipartFieldNameWithBackslash)
     test(_TestMultipartFilenameWithBothSpecials)
 
-    // URL parsing property-based tests
-    test(Property1UnitTest[_ValidURLParts](_PropertyURLRoundtrip))
-    test(Property1UnitTest[_ValidURLParts](_PropertyURLDefaultPort))
-    test(Property1UnitTest[_ValidURLParts](
-      _PropertyURLRequestPathStartsWithSlash))
-
-    // URL parsing example-based tests
-    test(_TestURLFullComponents)
-    test(_TestURLMinimal)
-    test(_TestURLDefaultPortHTTP)
-    test(_TestURLDefaultPortHTTPS)
-    test(_TestURLMissingPathDefault)
-    test(_TestURLFragmentDiscarded)
-    test(_TestURLIPv6Host)
-    test(_TestURLIPv6DefaultPort)
-    test(_TestURLCaseInsensitiveScheme)
-    test(_TestURLEmptyPortDefault)
-    test(_TestURLErrorMissingScheme)
-    test(_TestURLErrorUnsupportedScheme)
-    test(_TestURLErrorMissingHost)
-    test(_TestURLErrorInvalidPort)
-    test(_TestURLErrorPortZero)
-    test(_TestURLErrorPortTooLarge)
-    test(_TestURLErrorUserInfo)
-    test(_TestURLValidPort65535)
-    test(_TestURLQueryWithoutPath)
-
     // Redirect tests
     test(_TestRedirectCrossOriginStripsCredentials)
     test(_TestRedirectSameOriginKeepsCredentials)
@@ -221,6 +194,12 @@ actor \nodoc\ Main is TestList
     test(_TestRedirectNonRedirectStatus)
     test(_TestRedirectRelativeLocation)
     test(_TestRedirectUnsupportedSchemeLocation)
+    test(_TestRedirectUserinfoRejected)
+    test(_TestRedirectIPv6Origin)
+    test(_TestRedirectEmptyPathDefaultsToSlash)
+    test(_TestRedirectEmptyPathWithQuery)
+    test(_TestRedirectEmptyHostRejected)
+    test(_TestRedirectMixedCaseScheme)
     test(Property1UnitTest[(U16, String val)](
       _PropertyRedirectStripsCredentials))
 

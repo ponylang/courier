@@ -8,7 +8,7 @@ Security rules are applied before any hop: an `https`-to-`http` downgrade is ref
 
 ## Remove Stringable from error types
 
-`ParseError`, `ConnectionFailureReason`, and `URLParseError` primitives no longer implement `Stringable`. Users receive these through callbacks and can match on the concrete primitive to produce whatever string they want.
+`ParseError` and `ConnectionFailureReason` primitives no longer implement `Stringable`. Users receive these through callbacks and can match on the concrete primitive to produce whatever string they want.
 
 Before:
 

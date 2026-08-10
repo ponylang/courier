@@ -1,4 +1,5 @@
 use lori = "lori"
+use uri = "uri"
 use "pony_test"
 
 // ---------------------------------------------------------------------------
@@ -65,7 +66,7 @@ class \nodoc\ _CountingFactory is RedirectConnectionFactory
   """
   var calls: USize = 0
 
-  fun ref apply(target: ParsedURL val): HTTPClientConnection =>
+  fun ref apply(target: uri.URI val): HTTPClientConnection =>
     calls = calls + 1
     HTTPClientConnection.none()
 

@@ -43,7 +43,7 @@ make clean
 
 ## Architecture
 
-Like lori and stallion, the user's actor owns the connection: it holds an `HTTPClientConnection` and takes synchronous `fun ref` callbacks through `HTTPClientLifecycleEventReceiver`. A core layer does HTTP/1.1 parsing and serialization; a convenience layer adds response collection, a request builder, URL parsing, encoding, and JSON decoding.
+Like lori and stallion, the user's actor owns the connection: it holds an `HTTPClientConnection` and takes synchronous `fun ref` callbacks through `HTTPClientLifecycleEventReceiver`. A core layer does HTTP/1.1 parsing and serialization; a convenience layer adds response collection, a request builder, encoding, and JSON decoding. URL parsing is handled by the [ponylang/uri](https://github.com/ponylang/uri) package.
 
 Two things a cold agent won't infer from the code:
 
