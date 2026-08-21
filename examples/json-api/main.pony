@@ -19,8 +19,8 @@ primitive TodoDecoder is JSONDecoder[Todo]
   """
   Decode a JSON object into a `Todo`.
   """
-  fun apply(value: json.JsonValue): (Todo | JSONDecodeError) =>
-    let nav = json.JsonNav(value)
+  fun apply(value: json.JSONValue): (Todo | JSONDecodeError) =>
+    let nav = json.JSONNav(value)
     try
       Todo(nav("title").as_string()?, nav("completed").as_bool()?)
     else
@@ -105,7 +105,7 @@ actor JSONAPIClient is HTTPClientConnectionActor
         _out.print("Todo item:")
         _out.print("  title: " + todo.title)
         _out.print("  completed: " + todo.completed.string())
-      | let err: json.JsonParseError =>
+      | let err: json.JSONParseError =>
         _out.print("JSON parse error: " + err.string())
       | let err: JSONDecodeError =>
         _out.print("JSON decode error: " + err.string())

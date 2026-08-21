@@ -345,12 +345,12 @@ class \nodoc\ iso _TestRedirectUnsupportedSchemeLocation is UnitTest
       | InvalidLocation => None
       | let r: Redirect =>
         h.fail(
-          "must reject unfollowable scheme in " + loc
-            + ", got target host " + _RedirectTestKit.target_host(r))
+          "must reject unfollowable scheme in " + loc +
+            ", got target host " + _RedirectTestKit.target_host(r))
       | let _: RedirectError =>
         h.fail(
-          "expected InvalidLocation for " + loc
-            + ", got a different RedirectError")
+          "expected InvalidLocation for " + loc +
+            ", got a different RedirectError")
       | _NotARedirect => h.fail("expected InvalidLocation for " + loc)
       end
     end

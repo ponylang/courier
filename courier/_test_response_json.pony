@@ -16,9 +16,9 @@ class \nodoc\ iso _TestResponseJSONValidObject is UnitTest
   fun apply(h: TestHelper) =>
     let response = _MakeJSONResponse("{\"name\": \"Alice\", \"age\": 30}")
     match \exhaustive\ ResponseJSON(response)
-    | let value: json.JsonValue =>
+    | let value: json.JSONValue =>
       match value
-      | let obj: json.JsonObject =>
+      | let obj: json.JSONObject =>
         try
           match obj("name")?
           | let s: String => h.assert_eq[String val]("Alice", s)
@@ -32,9 +32,9 @@ class \nodoc\ iso _TestResponseJSONValidObject is UnitTest
           h.fail("key access should not error")
         end
       else
-        h.fail("should parse as JsonObject")
+        h.fail("should parse as JSONObject")
       end
-    | let err: json.JsonParseError =>
+    | let err: json.JSONParseError =>
       h.fail("should not fail: " + err.string())
     end
 
@@ -45,39 +45,39 @@ class \nodoc\ iso _TestResponseJSONValidArray is UnitTest
   fun apply(h: TestHelper) =>
     let response = _MakeJSONResponse("[1, 2, 3]")
     match \exhaustive\ ResponseJSON(response)
-    | let value: json.JsonValue =>
+    | let value: json.JSONValue =>
       match value
-      | let arr: json.JsonArray =>
+      | let arr: json.JSONArray =>
         h.assert_eq[USize](3, arr.size())
       else
-        h.fail("should parse as JsonArray")
+        h.fail("should parse as JSONArray")
       end
-    | let err: json.JsonParseError =>
+    | let err: json.JSONParseError =>
       h.fail("should not fail: " + err.string())
     end
 
 class \nodoc\ iso _TestResponseJSONInvalid is UnitTest
-  """Invalid JSON body returns JsonParseError."""
+  """Invalid JSON body returns JSONParseError."""
   fun name(): String => "response_json/invalid"
 
   fun apply(h: TestHelper) =>
     let response = _MakeJSONResponse("not json {{")
     match \exhaustive\ ResponseJSON(response)
-    | let value: json.JsonValue =>
+    | let value: json.JSONValue =>
       h.fail("should fail on invalid JSON")
-    | let err: json.JsonParseError =>
+    | let err: json.JSONParseError =>
       h.assert_true(err.message.size() > 0, "error should have a message")
     end
 
 class \nodoc\ iso _TestResponseJSONEmptyBody is UnitTest
-  """Empty body returns JsonParseError."""
+  """Empty body returns JSONParseError."""
   fun name(): String => "response_json/empty_body"
 
   fun apply(h: TestHelper) =>
     let response = _MakeJSONResponse("")
     match \exhaustive\ ResponseJSON(response)
-    | let value: json.JsonValue =>
+    | let value: json.JSONValue =>
       h.fail("empty body should fail to parse")
-    | let err: json.JsonParseError =>
+    | let err: json.JSONParseError =>
       h.assert_true(err.message.size() > 0, "error should have a message")
     end

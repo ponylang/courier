@@ -36,9 +36,9 @@ class ref MultipartFormData
     let rand = Rand(secs.u64(), nanos.u64())
     let a = rand.next()
     let b = rand.next()
-    _boundary = "----courier"
-      + Format.int[U64](a, FormatHexSmallBare where width = 16, fill = '0')
-      + Format.int[U64](b, FormatHexSmallBare where width = 16, fill = '0')
+    _boundary = "----courier" +
+      Format.int[U64](a, FormatHexSmallBare where width = 16, fill = '0') +
+      Format.int[U64](b, FormatHexSmallBare where width = 16, fill = '0')
 
   fun ref field(name: String, value: String): MultipartFormData ref =>
     """

@@ -2,7 +2,7 @@ use json = "json"
 
 interface val JSONDecoder[A: Any val]
   """
-  Interface for converting a parsed `JsonValue` into a typed domain object.
+  Interface for converting a parsed `JSONValue` into a typed domain object.
 
   Implement this interface to define how a specific JSON structure maps to your
   application type. Return `JSONDecodeError` when the JSON doesn't match the
@@ -21,8 +21,8 @@ interface val JSONDecoder[A: Any val]
       age = age'
 
   primitive UserDecoder is JSONDecoder[User]
-    fun apply(value: json.JsonValue): (User | JSONDecodeError) =>
-      let nav = json.JsonNav(value)
+    fun apply(value: json.JSONValue): (User | JSONDecodeError) =>
+      let nav = json.JSONNav(value)
       try
         User(nav("name").as_string()?, nav("age").as_i64()?)
       else
@@ -31,7 +31,7 @@ interface val JSONDecoder[A: Any val]
   ```
   """
 
-  fun apply(value: json.JsonValue): (A | JSONDecodeError)
+  fun apply(value: json.JSONValue): (A | JSONDecodeError)
     """
     Decode a parsed JSON value into a domain object, or return an error if
     the JSON structure doesn't match.

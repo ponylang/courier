@@ -10,7 +10,7 @@ primitive DecodeJSON[A: Any val]
 
   - `A` — the response body was valid JSON and matched the decoder's expected
     structure
-  - `JsonParseError` — the response body was not valid JSON syntax
+  - `JSONParseError` — the response body was not valid JSON syntax
   - `JSONDecodeError` — the JSON was valid but didn't match the decoder's
     expected structure (missing fields, wrong types, etc.)
 
@@ -22,7 +22,7 @@ primitive DecodeJSON[A: Any val]
   match DecodeJSON[User](response, UserDecoder)
   | let user: User =>
     env.out.print("Hello, " + user.name)
-  | let err: json.JsonParseError =>
+  | let err: json.JSONParseError =>
     env.out.print("Invalid JSON: " + err.string())
   | let err: JSONDecodeError =>
     env.out.print("Unexpected structure: " + err.string())
@@ -33,16 +33,16 @@ primitive DecodeJSON[A: Any val]
   fun apply(
     response: HTTPResponse,
     decoder: JSONDecoder[A])
-    : (A | json.JsonParseError | JSONDecodeError)
+    : (A | json.JSONParseError | JSONDecodeError)
   =>
     """
     Parse `response.body` as JSON, then decode with `decoder`.
 
-    Returns `JsonParseError` if the body isn't valid JSON, `JSONDecodeError` if
+    Returns `JSONParseError` if the body isn't valid JSON, `JSONDecodeError` if
     the JSON doesn't match the decoder's expected structure, or the decoded
     value on success.
     """
     match \exhaustive\ ResponseJSON(response)
-    | let value: json.JsonValue => decoder(value)
-    | let err: json.JsonParseError => err
+    | let value: json.JSONValue => decoder(value)
+    | let err: json.JSONParseError => err
     end
