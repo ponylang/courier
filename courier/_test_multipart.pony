@@ -175,8 +175,8 @@ class \nodoc\ iso _TestMultipartFilePart is UnitTest
 
     h.assert_true(
       body_str.contains(
-        "Content-Disposition: form-data;"
-        + " name=\"avatar\"; filename=\"photo.png\""),
+        "Content-Disposition: form-data;" +
+        " name=\"avatar\"; filename=\"photo.png\""),
       "should have Content-Disposition with name and filename")
     h.assert_true(
       body_str.contains("Content-Type: image/png"),
@@ -188,8 +188,8 @@ class \nodoc\ iso _TestMultipartFilePart is UnitTest
     var i: USize = 0
     while i <= (body.size() - 4) do
       try
-        if (body(i)? == 0x89) and (body(i + 1)? == 0x50)
-          and (body(i + 2)? == 0x4E) and (body(i + 3)? == 0x47)
+        if (body(i)? == 0x89) and (body(i + 1)? == 0x50) and
+          (body(i + 2)? == 0x4E) and (body(i + 3)? == 0x47)
         then
           found = true
           break

@@ -15,8 +15,8 @@ class \nodoc\ val _Todo
     title = title'
 
 primitive \nodoc\ _TodoDecoder is JSONDecoder[_Todo]
-  fun apply(value: json.JsonValue): (_Todo | JSONDecodeError) =>
-    let nav = json.JsonNav(value)
+  fun apply(value: json.JSONValue): (_Todo | JSONDecodeError) =>
+    let nav = json.JSONNav(value)
     try
       _Todo(nav("id").as_i64()?, nav("title").as_string()?)
     else
@@ -25,11 +25,11 @@ primitive \nodoc\ _TodoDecoder is JSONDecoder[_Todo]
     end
 
 primitive \nodoc\ _AlwaysSucceedDecoder is JSONDecoder[String]
-  fun apply(value: json.JsonValue): (String | JSONDecodeError) =>
+  fun apply(value: json.JSONValue): (String | JSONDecodeError) =>
     "success"
 
 primitive \nodoc\ _AlwaysFailDecoder is JSONDecoder[String]
-  fun apply(value: json.JsonValue): (String | JSONDecodeError) =>
+  fun apply(value: json.JSONValue): (String | JSONDecodeError) =>
     JSONDecodeError("always fails")
 
 // ---------------------------------------------------------------------------
@@ -64,7 +64,7 @@ primitive \nodoc\ _ValidJSONGen
 class \nodoc\ iso _PropertyDecodeJSONParseErrorPropagation
   is Property1[String val]
   """
-  Invalid JSON always yields JsonParseError, never success or decode error.
+  Invalid JSON always yields JSONParseError, never success or decode error.
   """
   fun name(): String => "json_decoder/property/parse_error_propagation"
 
@@ -74,10 +74,10 @@ class \nodoc\ iso _PropertyDecodeJSONParseErrorPropagation
     let response = _MakeJSONResponse(sample)
     match \exhaustive\ DecodeJSON[String](response, _AlwaysSucceedDecoder)
     | let s: String =>
-      h.fail("expected JsonParseError, got success: " + s)
-    | let err: json.JsonParseError => None
+      h.fail("expected JSONParseError, got success: " + s)
+    | let err: json.JSONParseError => None
     | let err: JSONDecodeError =>
-      h.fail("expected JsonParseError, got JSONDecodeError: " + err.string())
+      h.fail("expected JSONParseError, got JSONDecodeError: " + err.string())
     end
 
 class \nodoc\ iso _PropertyDecodeJSONDecodeErrorPropagation
@@ -92,8 +92,8 @@ class \nodoc\ iso _PropertyDecodeJSONDecodeErrorPropagation
     match \exhaustive\ DecodeJSON[String](response, _AlwaysFailDecoder)
     | let s: String =>
       h.fail("expected JSONDecodeError, got success: " + s)
-    | let err: json.JsonParseError =>
-      h.fail("expected JSONDecodeError, got JsonParseError: " + err.string())
+    | let err: json.JSONParseError =>
+      h.fail("expected JSONDecodeError, got JSONParseError: " + err.string())
     | let err: JSONDecodeError => None
     end
 
@@ -107,8 +107,8 @@ class \nodoc\ iso _PropertyDecodeJSONIdentityDecoder is Property1[String val]
     let response = _MakeJSONResponse(sample)
     match \exhaustive\ DecodeJSON[String](response, _AlwaysSucceedDecoder)
     | let s: String => None
-    | let err: json.JsonParseError =>
-      h.fail("expected success, got JsonParseError: " + err.string())
+    | let err: json.JSONParseError =>
+      h.fail("expected success, got JSONParseError: " + err.string())
     | let err: JSONDecodeError =>
       h.fail("expected success, got JSONDecodeError: " + err.string())
     end
@@ -121,7 +121,7 @@ class \nodoc\ iso _TestJSONDecoderSuccessfulDecode is UnitTest
   fun name(): String => "json_decoder/successful_decode"
 
   fun apply(h: TestHelper) =>
-    let value = json.JsonObject
+    let value = json.JSONObject
       .update("id", I64(1))
       .update("title", "test")
     match \exhaustive\ _TodoDecoder(value)
@@ -137,7 +137,7 @@ class \nodoc\ iso _TestJSONDecoderMissingField is UnitTest
   fun name(): String => "json_decoder/missing_field"
 
   fun apply(h: TestHelper) =>
-    let value = json.JsonObject
+    let value = json.JSONObject
       .update("id", I64(1))
     match \exhaustive\ _TodoDecoder(value)
     | let todo: _Todo =>
@@ -151,7 +151,7 @@ class \nodoc\ iso _TestJSONDecoderWrongType is UnitTest
   fun name(): String => "json_decoder/wrong_type"
 
   fun apply(h: TestHelper) =>
-    let value = json.JsonObject
+    let value = json.JSONObject
       .update("id", "not_a_number")
       .update("title", "test")
     match \exhaustive\ _TodoDecoder(value)
@@ -171,25 +171,25 @@ class \nodoc\ iso _TestDecodeJSONValidJSON is UnitTest
     | let todo: _Todo =>
       h.assert_eq[I64](42, todo.id)
       h.assert_eq[String val]("hello", todo.title)
-    | let err: json.JsonParseError =>
-      h.fail("expected success, got JsonParseError: " + err.string())
+    | let err: json.JSONParseError =>
+      h.fail("expected success, got JSONParseError: " + err.string())
     | let err: JSONDecodeError =>
       h.fail("expected success, got JSONDecodeError: " + err.string())
     end
 
 class \nodoc\ iso _TestDecodeJSONInvalidJSON is UnitTest
-  """Non-JSON body yields JsonParseError through DecodeJSON."""
+  """Non-JSON body yields JSONParseError through DecodeJSON."""
   fun name(): String => "decode_json/invalid_json"
 
   fun apply(h: TestHelper) =>
     let response = _MakeJSONResponse("not json {{")
     match \exhaustive\ DecodeJSON[_Todo](response, _TodoDecoder)
     | let todo: _Todo =>
-      h.fail("expected JsonParseError")
-    | let err: json.JsonParseError =>
+      h.fail("expected JSONParseError")
+    | let err: json.JSONParseError =>
       h.assert_true(err.message.size() > 0, "error should have a message")
     | let err: JSONDecodeError =>
-      h.fail("expected JsonParseError, got JSONDecodeError: " + err.string())
+      h.fail("expected JSONParseError, got JSONDecodeError: " + err.string())
     end
 
 class \nodoc\ iso _TestDecodeJSONWrongStructure is UnitTest
@@ -203,8 +203,8 @@ class \nodoc\ iso _TestDecodeJSONWrongStructure is UnitTest
     match \exhaustive\ DecodeJSON[_Todo](response, _TodoDecoder)
     | let todo: _Todo =>
       h.fail("expected JSONDecodeError")
-    | let err: json.JsonParseError =>
-      h.fail("expected JSONDecodeError, got JsonParseError: " + err.string())
+    | let err: json.JSONParseError =>
+      h.fail("expected JSONDecodeError, got JSONParseError: " + err.string())
     | let err: JSONDecodeError =>
       h.assert_true(err.message.size() > 0, "error should have a message")
     end

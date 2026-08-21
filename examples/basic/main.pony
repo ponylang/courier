@@ -52,8 +52,8 @@ actor BasicClient is HTTPClientConnectionActor
     """
     _collector = ResponseCollector
     _collector.set_response(response)
-    _out.print("< " + response.version.string() + " "
-      + response.status.string() + " " + response.reason)
+    _out.print("< " + response.version.string() + " " +
+      response.status.string() + " " + response.reason)
     for (name, value) in response.headers.values() do
       _out.print("< " + name + ": " + value)
     end

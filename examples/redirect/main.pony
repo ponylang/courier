@@ -93,8 +93,8 @@ actor RedirectClient is
   fun ref on_response(response: Response val) =>
     _collector = ResponseCollector
     _collector.set_response(response)
-    _out.print("< " + response.version.string() + " "
-      + response.status.string() + " " + response.reason)
+    _out.print("< " + response.version.string() + " " +
+      response.status.string() + " " + response.reason)
 
   fun ref on_body_chunk(data: Array[U8] val) =>
     _collector.add_chunk(data)

@@ -76,8 +76,8 @@ primitive _RedirectDecision
       max_redirects - 1)
 
   fun _is_redirect_status(status: U16): Bool =>
-    (status == 301) or (status == 302) or (status == 303)
-      or (status == 307) or (status == 308)
+    (status == 301) or (status == 302) or (status == 303) or
+      (status == 307) or (status == 308)
 
   fun _resolve_target(
     origin: Origin,
@@ -164,10 +164,10 @@ primitive _RedirectDecision
     end
 
   fun _is_sensitive(name: String): Bool =>
-    (name == "authorization") or (name == "cookie")
-      or (name == "proxy-authorization") or (name == "host")
-      or (name == "referer")
+    (name == "authorization") or (name == "cookie") or
+      (name == "proxy-authorization") or (name == "host") or
+      (name == "referer")
 
   fun _is_body_header(name: String): Bool =>
-    (name == "content-length") or (name == "content-type")
-      or (name == "content-encoding") or (name == "transfer-encoding")
+    (name == "content-length") or (name == "content-type") or
+      (name == "content-encoding") or (name == "transfer-encoding")

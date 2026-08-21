@@ -43,10 +43,10 @@ class \nodoc\ iso _PropertyQueryReservedEncoded
   fun gen(): Generator[U8] =>
     Generators.u8().filter({(byte) =>
       let is_unreserved =
-        ((byte >= 'A') and (byte <= 'Z'))
-          or ((byte >= 'a') and (byte <= 'z'))
-          or ((byte >= '0') and (byte <= '9'))
-          or (byte == '-') or (byte == '.') or (byte == '_') or (byte == '~')
+        ((byte >= 'A') and (byte <= 'Z')) or
+          ((byte >= 'a') and (byte <= 'z')) or
+          ((byte >= '0') and (byte <= '9')) or
+          (byte == '-') or (byte == '.') or (byte == '_') or (byte == '~')
       (byte, not is_unreserved)
     })
 

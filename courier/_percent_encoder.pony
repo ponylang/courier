@@ -50,16 +50,16 @@ primitive _PercentEncoder
     consume buf
 
   fun _is_rfc3986_unreserved(byte: U8): Bool =>
-    ((byte >= 'A') and (byte <= 'Z'))
-      or ((byte >= 'a') and (byte <= 'z'))
-      or ((byte >= '0') and (byte <= '9'))
-      or (byte == '-') or (byte == '.') or (byte == '_') or (byte == '~')
+    ((byte >= 'A') and (byte <= 'Z')) or
+      ((byte >= 'a') and (byte <= 'z')) or
+      ((byte >= '0') and (byte <= '9')) or
+      (byte == '-') or (byte == '.') or (byte == '_') or (byte == '~')
 
   fun _is_form_unreserved(byte: U8): Bool =>
-    ((byte >= 'A') and (byte <= 'Z'))
-      or ((byte >= 'a') and (byte <= 'z'))
-      or ((byte >= '0') and (byte <= '9'))
-      or (byte == '*') or (byte == '-') or (byte == '.') or (byte == '_')
+    ((byte >= 'A') and (byte <= 'Z')) or
+      ((byte >= 'a') and (byte <= 'z')) or
+      ((byte >= '0') and (byte <= '9')) or
+      (byte == '*') or (byte == '-') or (byte == '.') or (byte == '_')
 
   fun _hex_digit(nibble: U8): U8 =>
     let n = nibble and 0x0F

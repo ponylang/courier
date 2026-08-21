@@ -106,13 +106,13 @@ class _ExpectStatusLine is _ParserState
 
       let version =
         try
-          if (p.buf(p.pos)? == 'H')
-            and (p.buf(p.pos + 1)? == 'T')
-            and (p.buf(p.pos + 2)? == 'T')
-            and (p.buf(p.pos + 3)? == 'P')
-            and (p.buf(p.pos + 4)? == '/')
-            and (p.buf(p.pos + 5)? == '1')
-            and (p.buf(p.pos + 6)? == '.')
+          if (p.buf(p.pos)? == 'H') and
+            (p.buf(p.pos + 1)? == 'T') and
+            (p.buf(p.pos + 2)? == 'T') and
+            (p.buf(p.pos + 3)? == 'P') and
+            (p.buf(p.pos + 4)? == '/') and
+            (p.buf(p.pos + 5)? == '1') and
+            (p.buf(p.pos + 6)? == '.')
           then
             let minor = p.buf(p.pos + 7)?
             if minor == '1' then
@@ -151,9 +151,9 @@ class _ExpectStatusLine is _ParserState
           let d1 = p.buf(status_start)?
           let d2 = p.buf(status_start + 1)?
           let d3 = p.buf(status_start + 2)?
-          if (d1 < '0') or (d1 > '9')
-            or (d2 < '0') or (d2 > '9')
-            or (d3 < '0') or (d3 > '9')
+          if (d1 < '0') or (d1 > '9') or
+            (d2 < '0') or (d2 > '9') or
+            (d3 < '0') or (d3 > '9')
           then
             return InvalidStatusLine
           end
