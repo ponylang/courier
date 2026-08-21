@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Changed
 
 - Update to work with Pony 0.69.0 ([PR #89](https://github.com/ponylang/courier/pull/89))
+- Require ponyc 0.69.1 or later ([PR #91](https://github.com/ponylang/courier/pull/91))
 
 ## [0.6.0] - 2026-08-10
 
