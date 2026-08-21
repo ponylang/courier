@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Changed
 
+- Update to work with Pony 0.69.0 ([PR #89](https://github.com/ponylang/courier/pull/89))
 
 ## [0.6.0] - 2026-08-10
 
