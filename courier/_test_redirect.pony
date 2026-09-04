@@ -466,7 +466,7 @@ class \nodoc\ iso _PropertyRedirectStripsCredentials
   fun gen(): Generator[(U16, String val)] =>
     Generators.zip2[U16, String val](
       Generators.one_of[U16]([as U16: 301; 302; 303; 307; 308]),
-      Generators.ascii_letters(where min = 1, max = 12))
+      Generators.ascii_letters(where from = 1, to = 12))
 
   fun ref property(arg1: (U16, String val), ph: PropertyHelper) =>
     (let status, let safe_name_raw) = arg1

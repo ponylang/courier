@@ -38,7 +38,7 @@ primitive \nodoc\ _AlwaysFailDecoder is JSONDecoder[String]
 primitive \nodoc\ _InvalidJSONGen
   fun apply(): Generator[String] =>
     Generators.ascii_printable(
-      where min = 0, max = 50
+      where from = 0, to = 50
     ).map[String]({(s) => "{{INVALID " + s})
 
 primitive \nodoc\ _ValidJSONGen
