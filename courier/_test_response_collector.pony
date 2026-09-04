@@ -14,7 +14,7 @@ class \nodoc\ iso _PropertyCollectorChunkAccumulation
   fun name(): String => "response_collector/chunk_accumulation"
 
   fun gen(): Generator[Array[USize] ref] =>
-    Generators.array_of[USize](Generators.usize(0, 100) where min = 0)
+    Generators.array_of[USize](Generators.usize(0, 100) where from = 0)
 
   fun ref property(arg1: Array[USize] ref, ph: PropertyHelper) =>
     let response = _make_response()
