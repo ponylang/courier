@@ -1,5 +1,4 @@
 use lori = "lori"
-use ssl_net = "ssl/net"
 
 primitive _Idle
 primitive _AwaitingResponse
@@ -89,7 +88,7 @@ class HTTPClientConnection is
 
   new ssl(
     auth: lori.TCPConnectAuth,
-    ssl_ctx: ssl_net.SSLContext val,
+    ssl_ctx: lori.SSLContext val,
     host: String,
     port: String,
     client_actor: HTTPClientConnectionActor ref,

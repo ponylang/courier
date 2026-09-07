@@ -43,7 +43,7 @@ make test-one t=TestName ssl=3.0.x  # run a single test by name
 make clean
 ```
 
-`ssl=` is required because courier depends on the `ssl` package; the Makefile passes the version to ponyc as a compile define and errors without it.
+`ssl=` is required because lori links against OpenSSL/LibreSSL; the Makefile passes the version to ponyc as a compile define and errors without it.
 
 ## Architecture
 

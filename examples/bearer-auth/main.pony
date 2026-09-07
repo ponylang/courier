@@ -1,7 +1,6 @@
 use "../../courier"
 use "files"
 use lori = "lori"
-use ssl = "ssl/net"
 
 actor Main
   new create(env: Env) =>
@@ -9,7 +8,7 @@ actor Main
     try
       let ssl_ctx =
         recover val
-          ssl.SSLContext
+          lori.SSLContext
             .> set_client_verify(true)
             .> set_authority(
               FilePath(
@@ -40,7 +39,7 @@ actor BearerAuthClient is HTTPClientConnectionActor
 
   new create(
     auth: lori.TCPConnectAuth,
-    ssl_ctx: ssl.SSLContext val,
+    ssl_ctx: lori.SSLContext val,
     out: OutStream)
   =>
     _out = out
