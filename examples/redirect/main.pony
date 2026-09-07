@@ -1,7 +1,6 @@
 use "../../courier"
 use "files"
 use lori = "lori"
-use ssl = "ssl/net"
 use uri = "uri"
 
 actor Main
@@ -10,7 +9,7 @@ actor Main
     try
       let ssl_ctx =
         recover val
-          ssl.SSLContext
+          lori.SSLContext
             .> set_client_verify(true)
             .> set_authority(
               FilePath(
@@ -41,7 +40,7 @@ actor RedirectClient is
 
   new create(
     auth: lori.TCPConnectAuth,
-    ssl_ctx: ssl.SSLContext val,
+    ssl_ctx: lori.SSLContext val,
     host: String,
     port: String,
     out: OutStream)

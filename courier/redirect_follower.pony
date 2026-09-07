@@ -22,7 +22,7 @@ class RedirectFollower is HTTPClientLifecycleEventReceiver
   actor MyClient is (HTTPClientConnectionActor & RedirectFollowerNotify)
     var _http: RedirectFollower = RedirectFollower.none()
 
-    new create(auth: lori.TCPConnectAuth, ssl_ctx: ssl_net.SSLContext val,
+    new create(auth: lori.TCPConnectAuth, ssl_ctx: lori.SSLContext val,
       host: String, port: String)
     =>
       let config = ClientConnectionConfig
