@@ -1,9 +1,9 @@
 use "../../courier"
-use lori = "lori"
+use "net"
 
 actor Main
   new create(env: Env) =>
-    let auth = lori.TCPConnectAuth(env.root)
+    let auth = TCPConnectAuth(env.root)
     BasicClient(auth, "example.com", "80", env.out)
 
 actor BasicClient is HTTPClientConnectionActor
@@ -22,7 +22,7 @@ actor BasicClient is HTTPClientConnectionActor
   let _out: OutStream
 
   new create(
-    auth: lori.TCPConnectAuth,
+    auth: TCPConnectAuth,
     host: String,
     port: String,
     out: OutStream)

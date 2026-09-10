@@ -1,4 +1,4 @@
-use lori = "lori"
+use "net"
 use uri = "uri"
 
 primitive _Suppressing
@@ -22,7 +22,7 @@ class RedirectFollower is HTTPClientLifecycleEventReceiver
   actor MyClient is (HTTPClientConnectionActor & RedirectFollowerNotify)
     var _http: RedirectFollower = RedirectFollower.none()
 
-    new create(auth: lori.TCPConnectAuth, ssl_ctx: lori.SSLContext val,
+    new create(auth: TCPConnectAuth, ssl_ctx: SSLContext val,
       host: String, port: String)
     =>
       let config = ClientConnectionConfig
@@ -213,7 +213,7 @@ class RedirectFollower is HTTPClientLifecycleEventReceiver
   fun ref on_unthrottled() =>
     _receiver.on_unthrottled()
 
-  fun ref on_timer(token: lori.TimerToken) =>
+  fun ref on_timer(token: TimerToken) =>
     _receiver.on_timer(token)
 
   fun ref on_timer_failure() =>

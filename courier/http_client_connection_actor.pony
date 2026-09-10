@@ -1,11 +1,11 @@
-use lori = "lori"
+use "net"
 
 trait tag HTTPClientConnectionActor is
-  (lori.TCPConnectionActor & HTTPClientLifecycleEventReceiver)
+  (TCPConnectionActor & HTTPClientLifecycleEventReceiver)
   """
   Trait for actors that make HTTP client connections.
 
-  Extends `TCPConnectionActor` (for lori ASIO plumbing) and
+  Extends `TCPConnectionActor` (for net ASIO plumbing) and
   `HTTPClientLifecycleEventReceiver` (for HTTP-level callbacks). The
   actor stores an `HTTPClientConnection` as a field and implements
   `_http_client_connection()` to return it. All other required methods have
@@ -17,7 +17,7 @@ trait tag HTTPClientConnectionActor is
   actor MyClient is HTTPClientConnectionActor
     var _http: HTTPClientConnection = HTTPClientConnection.none()
 
-    new create(auth: lori.TCPConnectAuth, host: String, port: String,
+    new create(auth: TCPConnectAuth, host: String, port: String,
       config: ClientConnectionConfig)
     =>
       _http = HTTPClientConnection(auth, host, port, this, config)
@@ -52,7 +52,7 @@ trait tag HTTPClientConnectionActor is
     the same instance every time.
     """
 
-  fun ref _connection(): lori.TCPConnection =>
+  fun ref _connection(): TCPConnection =>
     """
     Delegates to the protocol's TCP connection.
     """

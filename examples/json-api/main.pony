@@ -1,7 +1,7 @@
 use "../../courier"
 use "files"
 use json = "json"
-use lori = "lori"
+use "net"
 
 class val Todo
   """
@@ -29,11 +29,11 @@ primitive TodoDecoder is JSONDecoder[Todo]
 
 actor Main
   new create(env: Env) =>
-    let auth = lori.TCPConnectAuth(env.root)
+    let auth = TCPConnectAuth(env.root)
     try
       let ssl_ctx =
         recover val
-          lori.SSLContext
+          SSLContext
             .> set_client_verify(true)
             .> set_authority(
               FilePath(
@@ -63,8 +63,8 @@ actor JSONAPIClient is HTTPClientConnectionActor
   let _out: OutStream
 
   new create(
-    auth: lori.TCPConnectAuth,
-    ssl_ctx: lori.SSLContext val,
+    auth: TCPConnectAuth,
+    ssl_ctx: SSLContext val,
     out: OutStream)
   =>
     _out = out

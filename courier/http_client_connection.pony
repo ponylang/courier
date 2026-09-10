@@ -1,10 +1,10 @@
-use lori = "lori"
+use "net"
 
 primitive _Idle
 primitive _AwaitingResponse
 
 class HTTPClientConnection is
-  (lori.ClientLifecycleEventReceiver & _ResponseParserNotify)
+  (ClientLifecycleEventReceiver & _ResponseParserNotify)
   """
   HTTP protocol handler that manages request serialization, response parsing,
   and connection lifecycle for a single HTTP client connection.
@@ -14,7 +14,7 @@ class HTTPClientConnection is
   responses, idle timeout scheduling, and backpressure — and delivers
   HTTP events to the actor via `HTTPClientLifecycleEventReceiver` callbacks.
 
-  The protocol class implements lori's `ClientLifecycleEventReceiver`
+  The protocol class implements net's `ClientLifecycleEventReceiver`
   to receive TCP-level events from the connection, and
   `_ResponseParserNotify` to receive parser callbacks. It forwards
   HTTP-level events to the owning actor.
@@ -26,7 +26,7 @@ class HTTPClientConnection is
   actor MyClient is HTTPClientConnectionActor
     var _http: HTTPClientConnection = HTTPClientConnection.none()
 
-    new create(auth: lori.TCPConnectAuth, host: String, port: String,
+    new create(auth: TCPConnectAuth, host: String, port: String,
       config: ClientConnectionConfig)
     =>
       _http = HTTPClientConnection(auth, host, port, this, config)
@@ -37,7 +37,7 @@ class HTTPClientConnection is
   let _config: (ClientConnectionConfig | None)
   let _host: String
   let _port: String
-  var _tcp_connection: lori.TCPConnection = lori.TCPConnection.none()
+  var _tcp_connection: TCPConnection = TCPConnection.none()
   var _state: _ConnectionState = _Active
   var _request_state: (_Idle | _AwaitingResponse) = _Idle
   var _parser: (_ResponseParser | None) = None
@@ -57,7 +57,7 @@ class HTTPClientConnection is
     _port = ""
 
   new create(
-    auth: lori.TCPConnectAuth,
+    auth: TCPConnectAuth,
     host: String,
     port: String,
     client_actor: HTTPClientConnectionActor ref,
@@ -76,7 +76,7 @@ class HTTPClientConnection is
     _port = port
     _parser = _ResponseParser(this, config._parser_config())
     _tcp_connection =
-      lori.TCPConnection.client(
+      TCPConnection.client(
         auth,
         host,
         port,
@@ -87,8 +87,8 @@ class HTTPClientConnection is
           connection_timeout = config.connection_timeout)
 
   new ssl(
-    auth: lori.TCPConnectAuth,
-    ssl_ctx: lori.SSLContext val,
+    auth: TCPConnectAuth,
+    ssl_ctx: SSLContext val,
     host: String,
     port: String,
     client_actor: HTTPClientConnectionActor ref,
@@ -107,7 +107,7 @@ class HTTPClientConnection is
     _port = port
     _parser = _ResponseParser(this, config._parser_config())
     _tcp_connection =
-      lori.TCPConnection.ssl_client(
+      TCPConnection.ssl_client(
         auth,
         ssl_ctx,
         host,
@@ -118,7 +118,7 @@ class HTTPClientConnection is
         where read_buffer_size = config.read_buffer_size,
           connection_timeout = config.connection_timeout)
 
-  fun ref _connection(): lori.TCPConnection =>
+  fun ref _connection(): TCPConnection =>
     """
     Return the underlying TCP connection.
     """
@@ -156,7 +156,7 @@ class HTTPClientConnection is
 
     let serialized = _RequestSerializer(request, _host, _port)
     match _tcp_connection.send(consume serialized)
-    | let _: lori.SendError =>
+    | let _: SendError =>
       _close_connection()
       return ConnectionClosed
     end
@@ -173,8 +173,8 @@ class HTTPClientConnection is
     """
     _close_connection()
 
-  fun ref set_timer(duration: lori.TimerDuration)
-    : (lori.TimerToken | lori.SetTimerError)
+  fun ref set_timer(duration: TimerDuration)
+    : (TimerToken | SetTimerError)
   =>
     """
     Create a one-shot timer that fires `on_timer()` after the configured
@@ -191,7 +191,7 @@ class HTTPClientConnection is
     first. Requires the connection to be open; returns `SetTimerNotOpen` if
     not.
 
-    Use `lori.MakeTimerDuration(milliseconds)` to create the duration value.
+    Use `MakeTimerDuration(milliseconds)` to create the duration value.
     `MakeTimerDuration` returns `(TimerDuration | ValidationFailure)`, so
     match on the result before passing it here.
 
@@ -202,7 +202,7 @@ class HTTPClientConnection is
     """
     _tcp_connection.set_timer(duration)
 
-  fun ref cancel_timer(token: lori.TimerToken) =>
+  fun ref cancel_timer(token: TimerToken) =>
     """
     Cancel an active timer. No-op if the token doesn't match the active timer
     (already fired, already cancelled, wrong token). Safe to call with stale
@@ -222,24 +222,16 @@ class HTTPClientConnection is
     | let r: HTTPClientLifecycleEventReceiver ref => r.on_connected()
     end
 
-  fun ref _on_connection_failure(reason: lori.ConnectionFailureReason) =>
+  fun ref _on_connection_failure(reason: ConnectionFailureReason) =>
     _state = _Closed
-    let courier_reason: ConnectionFailureReason =
-      match \exhaustive\ reason
-      | lori.ConnectionFailedDNS => ConnectionFailedDNS
-      | lori.ConnectionFailedTCP => ConnectionFailedTCP
-      | lori.ConnectionFailedSSL => ConnectionFailedSSL
-      | lori.ConnectionFailedTimeout => ConnectionFailedTimeout
-      | lori.ConnectionFailedTimerError => ConnectionFailedTimerError
-      end
     match _lifecycle_event_receiver
     | let r: HTTPClientLifecycleEventReceiver ref =>
-      r.on_connection_failure(courier_reason)
+      r.on_connection_failure(reason)
     end
 
-  fun ref _on_received(data: Array[U8] iso): lori.ReadAction =>
+  fun ref _on_received(data: Array[U8] iso): ReadAction =>
     _state.on_received(this, consume data)
-    lori.KeepReading
+    KeepReading
 
   fun ref _on_closed() =>
     _state.on_closed(this)
@@ -256,7 +248,7 @@ class HTTPClientConnection is
   fun ref _on_idle_timer_failure() =>
     _state.on_idle_timer_failure(this)
 
-  fun ref _on_timer(token: lori.TimerToken) =>
+  fun ref _on_timer(token: TimerToken) =>
     _state.on_timer(this, token)
 
   fun ref _on_timer_failure() =>
@@ -363,7 +355,7 @@ class HTTPClientConnection is
     | None => _Unreachable()
     end
 
-  fun ref _handle_timer(token: lori.TimerToken) =>
+  fun ref _handle_timer(token: TimerToken) =>
     """
     Forward one-shot timer firing to the receiver.
     """

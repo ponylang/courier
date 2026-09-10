@@ -1,10 +1,10 @@
-use lori = "lori"
+use "net"
 
 trait ref _ConnectionState
   """
   Connection lifecycle state.
 
-  Dispatches lori events to the appropriate client methods based on
+  Dispatches net events to the appropriate client methods based on
   what operations are valid in each state. Two states: `_Active`
   (connection is open for requests and responses) and `_Closed`
   (all operations are no-ops).
@@ -40,7 +40,7 @@ trait ref _ConnectionState
     Handle idle timer ASIO subscription failure.
     """
 
-  fun ref on_timer(client: HTTPClientConnection ref, token: lori.TimerToken)
+  fun ref on_timer(client: HTTPClientConnection ref, token: TimerToken)
     """
     Handle one-shot timer firing.
     """
@@ -73,7 +73,7 @@ class ref _Active is _ConnectionState
   fun ref on_idle_timer_failure(client: HTTPClientConnection ref) =>
     client._handle_idle_timer_failure()
 
-  fun ref on_timer(client: HTTPClientConnection ref, token: lori.TimerToken) =>
+  fun ref on_timer(client: HTTPClientConnection ref, token: TimerToken) =>
     client._handle_timer(token)
 
   fun ref on_timer_failure(client: HTTPClientConnection ref) =>
@@ -102,7 +102,7 @@ class ref _Closed is _ConnectionState
   fun ref on_idle_timer_failure(client: HTTPClientConnection ref) =>
     None
 
-  fun ref on_timer(client: HTTPClientConnection ref, token: lori.TimerToken) =>
+  fun ref on_timer(client: HTTPClientConnection ref, token: TimerToken) =>
     None
 
   fun ref on_timer_failure(client: HTTPClientConnection ref) =>

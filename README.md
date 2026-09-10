@@ -8,7 +8,7 @@ courier is beta quality software that will change frequently. Expect breaking ch
 
 ## Installation
 
-* Requires ponyc 0.70.0 or later.
+* Requires ponyc 0.72.0 or later.
 * Install [corral](https://github.com/ponylang/corral)
 * `corral add github.com/ponylang/courier.git --version 0.9.0`
 * `corral fetch` to fetch your dependencies
@@ -21,11 +21,11 @@ You'll also need an SSL library installed on your platform. See the [ssl](https:
 
 ```pony
 use "courier"
-use lori = "lori"
+use "net"
 
 actor Main
   new create(env: Env) =>
-    let auth = lori.TCPConnectAuth(env.root)
+    let auth = TCPConnectAuth(env.root)
     BasicClient(auth, "example.com", "80", env.out)
 
 actor BasicClient is HTTPClientConnectionActor
@@ -34,7 +34,7 @@ actor BasicClient is HTTPClientConnectionActor
   let _out: OutStream
 
   new create(
-    auth: lori.TCPConnectAuth,
+    auth: TCPConnectAuth,
     host: String,
     port: String,
     out: OutStream)
