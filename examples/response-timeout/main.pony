@@ -1,14 +1,14 @@
 use "../../courier"
 use "files"
-use lori = "lori"
+use "net"
 
 actor Main
   new create(env: Env) =>
-    let auth = lori.TCPConnectAuth(env.root)
+    let auth = TCPConnectAuth(env.root)
     try
       let ssl_ctx =
         recover val
-          lori.SSLContext
+          SSLContext
             .> set_client_verify(true)
             .> set_authority(
               FilePath(
@@ -30,12 +30,12 @@ actor ResponseTimeoutClient is HTTPClientConnectionActor
   the timer would be cancelled.
   """
   var _http: HTTPClientConnection = HTTPClientConnection.none()
-  var _timer: (lori.TimerToken | None) = None
+  var _timer: (TimerToken | None) = None
   let _out: OutStream
 
   new create(
-    auth: lori.TCPConnectAuth,
-    ssl_ctx: lori.SSLContext val,
+    auth: TCPConnectAuth,
+    ssl_ctx: SSLContext val,
     out: OutStream)
   =>
     _out = out
@@ -56,16 +56,16 @@ actor ResponseTimeoutClient is HTTPClientConnectionActor
 
     // Set a 3-second response deadline. MakeTimerDuration validates
     // the millisecond value and returns a TimerDuration on success.
-    match lori.MakeTimerDuration(3_000)
-    | let d: lori.TimerDuration =>
+    match MakeTimerDuration(3_000)
+    | let d: TimerDuration =>
       // set_timer returns a TimerToken on success, or a SetTimerError
       // if the connection isn't open or a timer is already active.
       match \exhaustive\ _http.set_timer(d)
-      | let t: lori.TimerToken =>
+      | let t: TimerToken =>
         _timer = t
-      | lori.SetTimerAlreadyActive =>
+      | SetTimerAlreadyActive =>
         _out.print("Timer already active")
-      | lori.SetTimerNotOpen =>
+      | SetTimerNotOpen =>
         _out.print("Connection not open")
       end
     end
@@ -87,17 +87,17 @@ actor ResponseTimeoutClient is HTTPClientConnectionActor
   fun ref on_response_complete() =>
     // Response arrived before the deadline — cancel the timer.
     match _timer
-    | let t: lori.TimerToken =>
+    | let t: TimerToken =>
       _http.cancel_timer(t)
       _timer = None
       _out.print("Response complete (timer cancelled)")
     end
     _http.close()
 
-  fun ref on_timer(token: lori.TimerToken) =>
+  fun ref on_timer(token: TimerToken) =>
     // Deadline expired before the response arrived.
     match _timer
-    | let t: lori.TimerToken if t == token =>
+    | let t: TimerToken if t == token =>
       _timer = None
       _out.print("Response timed out — closing connection")
       _http.close()

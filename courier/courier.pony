@@ -1,9 +1,8 @@
 """
 courier — HTTP client for Pony.
 
-Courier is an HTTP/1.1 client library built on
-[lori](https://github.com/ponylang/lori). It follows the same architectural
-pattern as lori and [stallion](https://github.com/ponylang/stallion): a
+Courier is an HTTP/1.1 client library. It follows the same architectural
+pattern as [stallion](https://github.com/ponylang/stallion): a
 protocol handler class (`HTTPClientConnection`) owned by the user's actor,
 with synchronous `fun ref` callbacks. No hidden actors.
 
@@ -15,13 +14,13 @@ you need:
 
 ```pony
 use "courier"
-use lori = "lori"
+use "net"
 
 actor MyClient is HTTPClientConnectionActor
   var _http: HTTPClientConnection = HTTPClientConnection.none()
   let _out: OutStream
 
-  new create(auth: lori.TCPConnectAuth, host: String, port: String,
+  new create(auth: TCPConnectAuth, host: String, port: String,
     out: OutStream)
   =>
     _out = out
@@ -60,7 +59,7 @@ connection if the timer fires:
 ```pony
 actor MyClient is HTTPClientConnectionActor
   var _http: HTTPClientConnection = HTTPClientConnection.none()
-  var _timer: (lori.TimerToken | None) = None
+  var _timer: (TimerToken | None) = None
   let _out: OutStream
 
   // ... constructor ...
@@ -69,26 +68,26 @@ actor MyClient is HTTPClientConnectionActor
 
   fun ref on_connected() =>
     _http.send_request(Request.get("/slow-endpoint").build())
-    match lori.MakeTimerDuration(5_000)
-    | let d: lori.TimerDuration =>
+    match MakeTimerDuration(5_000)
+    | let d: TimerDuration =>
       match _http.set_timer(d)
-      | let t: lori.TimerToken => _timer = t
-      | let err: lori.SetTimerError => None
+      | let t: TimerToken => _timer = t
+      | let err: SetTimerError => None
       end
     end
 
   fun ref on_response_complete() =>
     match _timer
-    | let t: lori.TimerToken =>
+    | let t: TimerToken =>
       _http.cancel_timer(t)
       _timer = None
     end
     // process response...
     _http.close()
 
-  fun ref on_timer(token: lori.TimerToken) =>
+  fun ref on_timer(token: TimerToken) =>
     match _timer
-    | let t: lori.TimerToken if t == token =>
+    | let t: TimerToken if t == token =>
       _timer = None
       _out.print("Response timed out")
       _http.close()
@@ -130,11 +129,11 @@ Implement `RedirectFollowerNotify` (which extends
 - `ConnectionFailureReason` — reason a connection attempt failed
   (`ConnectionFailedDNS`, `ConnectionFailedTCP`, `ConnectionFailedSSL`,
   `ConnectionFailedTimeout`, `ConnectionFailedTimerError`)
-- `lori.TimerToken` — opaque token for timer cancellation and matching
-- `lori.TimerDuration` — validated timer duration (use
-  `lori.MakeTimerDuration(milliseconds)` to create)
-- `lori.SetTimerError` — timer setup failure (`lori.SetTimerAlreadyActive`,
-  `lori.SetTimerNotOpen`)
+- `TimerToken` — opaque token for timer cancellation and matching
+- `TimerDuration` — validated timer duration (use
+  `MakeTimerDuration(milliseconds)` to create)
+- `SetTimerError` — timer setup failure (`SetTimerAlreadyActive`,
+  `SetTimerNotOpen`)
 - `HTTPResponse` — buffered response with complete body
   (from `ResponseCollector`)
 - `ResponseCollector` — accumulates streaming callbacks into `HTTPResponse`

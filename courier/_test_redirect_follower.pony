@@ -1,4 +1,4 @@
-use lori = "lori"
+use "net"
 use uri = "uri"
 use "pony_test"
 

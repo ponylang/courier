@@ -1,4 +1,4 @@
-use lori = "lori"
+use "net"
 
 trait ref HTTPClientLifecycleEventReceiver
   """
@@ -97,7 +97,7 @@ trait ref HTTPClientLifecycleEventReceiver
     """
     None
 
-  fun ref on_timer(token: lori.TimerToken) =>
+  fun ref on_timer(token: TimerToken) =>
     """
     Called when a one-shot timer created by `HTTPClientConnection.set_timer()`
     fires.

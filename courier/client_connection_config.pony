@@ -1,12 +1,12 @@
-use lori = "lori"
+use "net"
 
 primitive _DefaultIdleTimeout
   """
   60-second idle timeout, the default for HTTP client connections.
   """
-  fun apply(): (lori.IdleTimeout | None) =>
-    match lori.MakeIdleTimeout(60_000)
-    | let t: lori.IdleTimeout => t
+  fun apply(): (IdleTimeout | None) =>
+    match MakeIdleTimeout(60_000)
+    | let t: IdleTimeout => t
     else
       _Unreachable()
       None
@@ -28,8 +28,8 @@ class val ClientConnectionConfig
   ClientConnectionConfig
 
   // Custom idle timeout via MakeIdleTimeout (milliseconds)
-  let timeout = match lori.MakeIdleTimeout(30_000)
-  | let t: lori.IdleTimeout => t
+  let timeout = match MakeIdleTimeout(30_000)
+  | let t: IdleTimeout => t
   end
   ClientConnectionConfig(where
     max_body_size' = 52_428_800,  // 50 MB
@@ -39,14 +39,14 @@ class val ClientConnectionConfig
   ClientConnectionConfig(where idle_timeout' = None)
 
   // Set a 5-second connection timeout
-  let ct = match lori.MakeConnectionTimeout(5_000)
-  | let t: lori.ConnectionTimeout => t
+  let ct = match MakeConnectionTimeout(5_000)
+  | let t: ConnectionTimeout => t
   end
   ClientConnectionConfig(where connection_timeout' = ct)
 
   // Smaller read buffer to limit work per turn
-  let rbs = match lori.MakeReadBufferSize(4096)
-  | let r: lori.ReadBufferSize => r
+  let rbs = match MakeReadBufferSize(4096)
+  | let r: ReadBufferSize => r
   end
   ClientConnectionConfig(where read_buffer_size' = rbs)
   ```
@@ -55,9 +55,9 @@ class val ClientConnectionConfig
   let max_header_size: USize
   let max_chunk_header_size: USize
   let max_body_size: USize
-  let idle_timeout: (lori.IdleTimeout | None)
-  let connection_timeout: (lori.ConnectionTimeout | None)
-  let read_buffer_size: lori.ReadBufferSize
+  let idle_timeout: (IdleTimeout | None)
+  let connection_timeout: (ConnectionTimeout | None)
+  let read_buffer_size: ReadBufferSize
   let from: String
 
   new val create(
@@ -65,9 +65,9 @@ class val ClientConnectionConfig
     max_header_size': USize = 8192,
     max_chunk_header_size': USize = 128,
     max_body_size': USize = 10_485_760,
-    idle_timeout': (lori.IdleTimeout | None) = _DefaultIdleTimeout(),
-    connection_timeout': (lori.ConnectionTimeout | None) = None,
-    read_buffer_size': lori.ReadBufferSize = lori.DefaultReadBufferSize(),
+    idle_timeout': (IdleTimeout | None) = _DefaultIdleTimeout(),
+    connection_timeout': (ConnectionTimeout | None) = None,
+    read_buffer_size': ReadBufferSize = DefaultReadBufferSize(),
     from': String = "")
   =>
     """
@@ -79,7 +79,7 @@ class val ClientConnectionConfig
     (milliseconds) or `None` to disable connection timeout. Defaults to
     `None`. `read_buffer_size'` bounds how much data the connection reads per
     scheduler turn — a smaller buffer means less work per turn at the cost of
-    more turns to deliver a large response. Defaults to 16 KB (lori's
+    more turns to deliver a large response. Defaults to 16 KB (net's
     default). `from'` specifies the local bind address (empty string means any
     interface).
     """

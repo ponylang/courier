@@ -2,7 +2,7 @@ class _ResponseParser
   """
   HTTP/1.1 response parser.
 
-  Data is fed in as chunks via `parse()` (matching lori's delivery model).
+  Data is fed in as chunks via `parse()` (matching net's delivery model).
   Parsed responses are delivered via the `_ResponseParserNotify` callback
   interface. The parser handles arbitrary chunk boundaries, connection reuse
   (multiple responses on the same connection), and both fixed-length, chunked,
